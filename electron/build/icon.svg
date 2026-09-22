@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- App icon: the colossus's head against a retrowave sun. Kept blocky and
+       high-contrast so it still reads at 16px in the taskbar. -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a1040"/>
+      <stop offset="0.55" stop-color="#5b1668"/>
+      <stop offset="1" stop-color="#ff7a4d"/>
+    </linearGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a416e"/>
+      <stop offset="1" stop-color="#1d2142"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#sky)"/>
+  <circle cx="128" cy="150" r="74" fill="#ffb066" opacity="0.55"/>
+  <g stroke="#22d3ee" stroke-width="7" stroke-linejoin="round">
+    <path d="M56 208 L200 208" stroke-opacity="0.9"/>
+    <path d="M78 96 L78 62 L178 62 L178 96" fill="none" stroke-opacity="0.35"/>
+  </g>
+  <!-- head -->
+  <path d="M74 104 L182 104 L172 186 L84 186 Z" fill="url(#plate)" stroke="#22d3ee" stroke-width="7" stroke-linejoin="round"/>
+  <rect x="88" y="124" width="80" height="26" rx="6" fill="#0d1030"/>
+  <circle cx="108" cy="137" r="11" fill="#ff3b30"/>
+  <circle cx="148" cy="137" r="11" fill="#ff3b30"/>
+  <rect x="104" y="164" width="48" height="10" rx="5" fill="#22d3ee" opacity="0.85"/>
+  <!-- antenna -->
+  <path d="M128 104 L128 74" stroke="#f2b134" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="128" cy="66" r="13" fill="#f2b134"/>
+</svg>

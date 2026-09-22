@@ -1,0 +1,5 @@
+# Downloaded Electron runtime (get-electron.ps1) and npm-installed deps -- both
+# are large, machine-specific, and reproducible from scratch.
+runtime/
+node_modules/
+package-lock.json
