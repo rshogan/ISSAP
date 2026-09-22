@@ -9,6 +9,9 @@ export function renderTitle(ctx) {
       <button class="btn btn-secondary exit-btn">Exit</button>
       <h1 class="game-title">ISSAP Cyber Conquest</h1>
       <p class="tagline">Conquer all four domains of the ISSAP CBK.</p>
+      <div class="title-links">
+        <button class="btn btn-secondary lore-btn">📖 Lore</button>
+      </div>
       <div class="new-game-box">
         <input type="text" id="new-game-name" placeholder="Name your save..." maxlength="40" />
         <button id="new-game-btn" class="btn btn-primary">New Game</button>
@@ -60,6 +63,8 @@ export function renderTitle(ctx) {
     const slot = save.createSlot(name, game.DOMAINS);
     goto("worldmap", { currentSlot: slot });
   });
+
+  container.querySelector(".lore-btn").addEventListener("click", () => goto("lore"));
 
   container.querySelector(".exit-btn").addEventListener("click", () => {
     if (!confirm("Exit ISSAP Cyber Conquest?")) return;

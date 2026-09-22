@@ -1,4 +1,5 @@
 let manifestPromise = null;
+let lorePromise = null;
 const questionsCache = new Map();
 const levelsCache = new Map();
 
@@ -7,6 +8,13 @@ export function loadManifest() {
     manifestPromise = fetch("../data/questions/manifest.json").then((r) => r.json());
   }
   return manifestPromise;
+}
+
+export function loadLore() {
+  if (!lorePromise) {
+    lorePromise = fetch("../data/lore.json").then((r) => r.json());
+  }
+  return lorePromise;
 }
 
 export async function loadQuestions(domainCode) {

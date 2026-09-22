@@ -2,6 +2,7 @@ import * as data from "./data.js";
 import * as save from "./save.js";
 import * as game from "./gamification.js";
 import { renderTitle } from "./screens/title.js";
+import { renderLore } from "./screens/lore.js";
 import { renderWorldMap } from "./screens/worldmap.js";
 import { renderLevelSelect } from "./screens/levelselect.js";
 import { renderQuestion } from "./screens/question.js";
@@ -26,6 +27,7 @@ function goto(screen, params = {}) {
 
 const renderers = {
   title: renderTitle,
+  lore: renderLore,
   worldmap: renderWorldMap,
   levelselect: renderLevelSelect,
   question: renderQuestion,

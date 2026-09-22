@@ -8,12 +8,12 @@ A practice test for the ISSAP security certification, built as ISSAP Cyber Conqu
 1) HTML/CSS/vanilla JavaScript (ES modules), usable in modern browsers.
 2) Portable: no Node.js, no npm, no build step. Two vendored libraries (Leaflet, SVG.js) are the only dependencies, checked into `web/vendor/`. A one-time Python pipeline (stdlib only) turns the source PDFs into the JSON the app reads; the app itself never needs Python once that data exists.
 3) All questions and answers live in JSON (`data/questions/*.json`, `data/levels/*.json`), fetched by the web app — no content is hardcoded in JS.
-4) Title screen: New Game, Continue (lists named saves with % complete, XP, last-played), Exit (confirms, then closes the tab or shows a farewell screen if the browser blocks it).
+4) Title screen: New Game, Continue (lists named saves with % complete, XP, last-played), Lore (the world's backstory and the wizard bios), Exit (confirms, then closes the tab or shows a farewell screen if the browser blocks it).
 5) Progress is stored in `localStorage`, keyed by named save slot.
-6) Every screen has a way back: World Map → "Return to Title"; Region Map → "Leave Region"; Quiz → "Leave City" / "Retreat" (confirms before discarding the in-progress run); Results → "Back to Level Select".
+6) Every screen has a way back: Lore → "Back to Title"; World Map → "Return to Title"; Region Map → "Leave Region"; Quiz → "Leave City" / "Retreat" (confirms before discarding the in-progress run); Results → "Back to Level Select".
 
 ## Game Structure
-Title → World Map (4 countries) → Region Map (one country's cities + boss) → Quiz → Results → back to Region Map.
+Title → World Map (4 countries) → Region Map (one country's cities + boss) → Quiz → Results → back to Region Map. Title also branches to Lore, a read-only screen.
 
 - **Domain = country.** The 4 ISSAP CBK domains (Governance/Risk/Compliance, Security Architecture Modeling, Infrastructure & System Security Architecture, Identity & Access Management) are the 4 countries on the World Map.
 - **Question group = city.** Each domain's Easy/Moderate questions are bin-packed into ~10-12-question cities (8-11 cities per domain depending on pool size).
@@ -30,6 +30,12 @@ Title → World Map (4 countries) → Region Map (one country's cities + boss) �
 - **Quiz screen** ("Gold Box" RPG layout, reactive to window resizing, not a mobile layout): a 3-panel grid — left graphics panel (60% width: generated city street scene + wizard character + a caption naming them), right question panel (40% width: difficulty badge + question stem), bottom command panel (35% height: a 2x2 answer grid that shrinks its own font size until all 4 options fit with no scrollbar, then swaps in-place to the explanation + Next button after answering).
   - The city background is a "looking down the street" first-person perspective scene, generated as SVG (no image assets) and seeded per city so no two streets are laid out alike: a banded retrowave sunset sky with stars, a sliced neon sun on the horizon, a neon perspective grid for the ground, and a street populated all the way to the horizon. Each block carries a front row of neon-edged 3D buildings with randomized lit/dark window grids, plus a back row standing behind them so the skyline has real depth rather than a single flat wall. Tapered towers — lit floor bands, vertical neon ribs, a spire and a red beacon — are sprinkled through both rows past the near field, breaking up the roofline and forming a dense skyline silhouette against the sunset. A block occasionally opens out into a paved plaza with a lit monument instead of another storefront. Cars park at the curb, robots loiter along the curb line at every depth, and festoon string lights sag across the street every other block. Everything is placed on a true perspective depth ladder (apparent scale = 1/depth, so objects bunch toward the vanishing point rather than stepping down linearly), with outline weights, window density and an atmospheric haze fade all following distance. The city's motif hangs overhead as a glowing neon sign. Answering correctly plays an "advance a block" beat — the scene dollies toward the vanishing point and settles, the wizard sweeps past the camera, and a flash blooms out of the horizon (CSS-only, and suppressed under `prefers-reduced-motion`). Each domain has its own neon accent (D1 cyan, D2 magenta, D3 amber, D4 green) driving the grid, building edges, windows and signage.
 
+
+## Lore
+`data/lore.json` (fetched by `lore.js`, no prose hardcoded in JS) holds the game's fiction: the world of **Cybersecuratia**, a six-beat hero's journey mapped onto the game's own structure (Call → Threshold → Trials → Mentors → Ordeal → Return), the four **colossi**, and a bio + one-line "counsel" for each of the eight wizards.
+
+- **The colossi are the threat actors.** One per domain -- GOVERNAX (D1), MODELBREAKER (D2), GRIDFALL (D3), NULLCRED (D4) -- each having taken its nation by walking through what that nation never fixed. They are the boss fights, and the one holding the current country looms on the horizon of every city street scene.
+- **The wizards are cybersecurity experts**, not combatants: they guide the player city by city, explaining every answer, and their goal is to hand over everything they know so the player can defeat the colossi, pass the exam, and restore the world.
 
 ## Characters
 The 8 classic secure design principles are each a wizard, themed on the 8 D&D schools of magic (the "abjurist"/"illusionist" pairing in the original brief made this mapping obvious):
@@ -50,14 +56,14 @@ Each has a genuinely distinct body/pose/silhouette (broad shield-bearer, slender
 ## Technical Architecture
 ```
 web/            static app: index.html, css/, js/ (ES modules), vendor/ (leaflet, svg.js)
-data/           questions/ and levels/ JSON, generated by the pipeline
+data/           questions/ and levels/ JSON, generated by the pipeline; lore.json, hand-authored
 pipeline/       build_questions.py, build_levels.py (Python 3 stdlib + pdftotext)
 server/         run_server.py — zero-dependency static file server (no-cache, for local iteration)
 run.bat         double-click entry point: launches the server and opens the browser
 context/        source practice exam + answer key PDFs
 
 ```
-No framework, no bundler, no npm. `save.js` owns the `localStorage` schema; `gamification.js` derives progress/unlock/conquered state from a save + the level data; `data.js` fetches/caches JSON; `regionLayouts.js` holds the pre-generated region geometry (coastlines, feature/city/boss coordinates, labels). `mapIcons.js` and `pixelArt.js` are the two SVG.js art generators — region-map symbology and quiz-screen scene/character art respectively. Both emit live inline `<svg>`; nothing is rasterized. (`pixelArt.js` keeps its name from an earlier pixel-art pass; its output is now clean vector.)
+No framework, no bundler, no npm. `lore.js` renders the Lore screen from `data/lore.json`. `save.js` owns the `localStorage` schema; `gamification.js` derives progress/unlock/conquered state from a save + the level data; `data.js` fetches/caches JSON; `regionLayouts.js` holds the pre-generated region geometry (coastlines, feature/city/boss coordinates, labels). `mapIcons.js` and `pixelArt.js` are the two SVG.js art generators — region-map symbology and quiz-screen scene/character art respectively. Both emit live inline `<svg>`; nothing is rasterized. (`pixelArt.js` keeps its name from an earlier pixel-art pass; its output is now clean vector.)
 
 ## Context
 `context/` : practice exam and answer key (source of truth for all question content).
