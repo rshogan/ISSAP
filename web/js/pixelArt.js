@@ -740,6 +740,102 @@ export function cityBackgroundHTML(domainCode, motif, seed) {
   }, "city-background");
 }
 
+/**
+ * The colossal robot boss, standing at the vanishing point of the city scene.
+ *
+ * Drawn into the *same* 160x100 viewBox and preserveAspectRatio as
+ * cityBackgroundHTML so it stays welded to the scene's horizon (y=40) and
+ * vanishing point (x=80) at any panel aspect ratio. Nominal height is small --
+ * a speck on the skyline -- and the quiz screen grows it by scaling the
+ * `.boss-figure` group via the `--boss-scale` custom property as the player
+ * answers correctly, so the boss visibly closes in block by block.
+ */
+export const BOSS_BASE_HEIGHT = 3.4;
+export const SCENE_VIEWBOX = { width: 160, height: 100, horizon: 40 };
+export function bossLoomingHTML(domainCode) {
+  const neon = DOMAIN_NEON[domainCode] || DOMAIN_NEON.D1;
+  return inlineIcon(160, 100, (draw) => {
+    draw.attr({ preserveAspectRatio: "xMidYMax slice" });
+    const figure = draw.group().addClass("boss-figure");
+    const sway = figure.group().addClass("boss-sway");
+    drawColossus(sway, 80, 40, BOSS_BASE_HEIGHT, neon);
+  }, "boss-looming");
+}
+
+function drawColossus(draw, cx, baseY, h, neon) {
+  // All geometry is expressed as a fraction of the figure's height so the whole
+  // robot stays proportional however far it is scaled up.
+  const y = (v) => baseY - v * h;
+  const x = (v) => cx + v * h;
+  const sw = (v) => v * h;
+  const plate = "#2b2f52";
+  const plateLit = mixColor(plate, neon, 0.22);
+  const ink = "#100c22";
+  const edge = { color: neon, width: sw(0.012), opacity: 0.85 };
+
+  // Backlit halo -- the thing is silhouetted against the sunset, so it reads as
+  // a shape punched out of the sky with light leaking around it.
+  draw.ellipse(h * 1.5, h * 1.35).center(cx, y(0.55)).fill(neon).opacity(0.13);
+  draw.ellipse(h * 0.9, h * 0.8).center(cx, y(0.58)).fill(neon).opacity(0.1);
+
+  // Legs and feet.
+  for (const side of [-1, 1]) {
+    const lx = x(side * 0.26 - 0.08);
+    draw.rect(sw(0.16), sw(0.34)).move(lx, y(0.34)).fill(ink);
+    draw.rect(sw(0.16), sw(0.34)).move(lx, y(0.34)).fill("none").stroke(edge);
+    draw.rect(sw(0.22), sw(0.05)).move(x(side * 0.26 - 0.11), y(0.05)).fill(plate);
+    draw.circle(sw(0.09)).center(x(side * 0.26), y(0.2)).fill(plateLit).opacity(0.9);
+  }
+  // Hips.
+  draw.rect(sw(0.5), sw(0.1)).move(x(-0.25), y(0.44)).fill(plate).stroke(edge);
+
+  // Tapered torso, wider at the shoulders than the waist.
+  const torso = `${x(-0.36)},${y(0.76)} ${x(0.36)},${y(0.76)} ${x(0.26)},${y(0.42)} ${x(-0.26)},${y(0.42)}`;
+  draw.polygon(torso).fill(plate).stroke(edge);
+  // Chest reactor.
+  draw.circle(sw(0.3)).center(cx, y(0.58)).fill(neon).opacity(0.22);
+  draw.circle(sw(0.15)).center(cx, y(0.58)).fill(neon).addClass("boss-core");
+
+  // Pauldrons and arms hanging at the sides.
+  for (const side of [-1, 1]) {
+    const shoulder = `${x(side * 0.34)},${y(0.78)} ${x(side * 0.55)},${y(0.72)} ${x(side * 0.5)},${y(0.55)} ${x(side * 0.3)},${y(0.6)}`;
+    draw.polygon(shoulder).fill(plateLit).stroke(edge);
+    const ax = side < 0 ? x(-0.52) : x(0.4);
+    draw.rect(sw(0.12), sw(0.36)).move(ax, y(0.58)).fill(ink).stroke(edge);
+    draw.rect(sw(0.16), sw(0.1)).move(ax - sw(0.02), y(0.22)).fill(plate).stroke(edge);
+  }
+
+  // Head: a narrow visor block on a short neck, two eyes and a beacon antenna.
+  draw.rect(sw(0.14), sw(0.06)).move(x(-0.07), y(0.82)).fill(ink);
+  const head = `${x(-0.17)},${y(0.94)} ${x(0.17)},${y(0.94)} ${x(0.14)},${y(0.8)} ${x(-0.14)},${y(0.8)}`;
+  draw.polygon(head).fill(plateLit).stroke(edge);
+  draw.rect(sw(0.26), sw(0.05)).move(x(-0.13), y(0.9)).fill(ink).opacity(0.85);
+  const eyes = draw.group().addClass("boss-eyes");
+  for (const side of [-1, 1]) {
+    eyes.circle(sw(0.1)).center(x(side * 0.07), y(0.875)).fill("#ff3b30").opacity(0.35);
+    eyes.circle(sw(0.05)).center(x(side * 0.07), y(0.875)).fill("#ffd9d6");
+  }
+  draw.line(cx, y(0.94), cx, y(1.04)).stroke({ color: neon, width: sw(0.02) });
+  draw.circle(sw(0.07)).center(cx, y(1.05)).fill(neon).addClass("boss-beacon");
+}
+
+/**
+ * Three chevrons the wizard sends down the street toward the boss -- the visual
+ * half of the "follow me" gesture; the sprite's lean is CSS (see quiz.css).
+ */
+export function guideChevronsHTML(domainCode) {
+  const neon = DOMAIN_NEON[domainCode] || DOMAIN_NEON.D1;
+  return inlineIcon(60, 22, (draw) => {
+    for (let i = 0; i < 3; i++) {
+      draw
+        .polyline(`${2 + i * 20},3 ${14 + i * 20},11 ${2 + i * 20},19`)
+        .fill("none")
+        .stroke({ color: neon, width: 3.2, linecap: "round", linejoin: "round" })
+        .addClass("guide-chevron");
+    }
+  }, "guide-chevrons");
+}
+
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {

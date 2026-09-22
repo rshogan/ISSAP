@@ -15,7 +15,10 @@
 .quiz-frame {
   display: grid;
   grid-template-columns: 60% 40%;
-  grid-template-rows: 13fr 7fr;
+  /* minmax(0, ...) so a long question/answer cannot push a row past its share --
+     grid tracks default to a min-content floor, which is what let the command
+     panel grow beyond the frame and clip its bottom row of answers. */
+  grid-template-rows: minmax(0, 13fr) minmax(0, 7fr);
   gap: 3px;
   width: 100%;
   height: 72vh;
@@ -44,9 +47,100 @@
   transform-origin: 50% 40%;
 }
 
+/* --- The colossal boss looming at the vanishing point --------------------- */
+/* Shares the background's viewBox and origin so it stays welded to the scene's
+   horizon, and dollies with it on the advance beat. */
+.quiz-graphics-panel .boss-looming {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform-origin: 50% 40%;
+}
+/* `--boss-scale` is set per question by question.js; the transition is what
+   turns each correct answer into a visible stride toward the player. */
+.quiz-graphics-panel .boss-figure {
+  transform-box: view-box;
+  transform-origin: 80px 40px;
+  transform: scale(var(--boss-scale, 1));
+  opacity: var(--boss-opacity, 0.45);
+  transition: transform 860ms cubic-bezier(0.2, 0.66, 0.3, 1), opacity 860ms ease-out;
+}
+/* Mount and resize park the boss at its size; only a correct answer strides. */
+.quiz-graphics-panel.boss-instant .boss-figure { transition: none; }
+.quiz-graphics-panel .boss-sway {
+  transform-box: view-box;
+  transform-origin: 80px 40px;
+  animation: boss-sway 5.4s ease-in-out infinite;
+}
+.quiz-graphics-panel .boss-eyes { animation: boss-eye-pulse 2.6s ease-in-out infinite; }
+.quiz-graphics-panel .boss-core { animation: boss-eye-pulse 3.4s ease-in-out infinite; }
+.quiz-graphics-panel .boss-beacon { animation: boss-beacon 1.6s steps(1, end) infinite; }
+
+@keyframes boss-sway {
+  0%, 100% { transform: rotate(-0.7deg); }
+  50% { transform: rotate(0.7deg); }
+}
+@keyframes boss-eye-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+@keyframes boss-beacon {
+  0%, 60% { opacity: 1; }
+  61%, 100% { opacity: 0.15; }
+}
+/* A heavy step lands as the player advances a block. */
+@keyframes boss-step {
+  0% { transform: rotate(0deg) translateY(0); }
+  35% { transform: rotate(1.6deg) translateY(-0.5px); }
+  70% { transform: rotate(-1.2deg) translateY(0.4px); }
+  100% { transform: rotate(0deg) translateY(0); }
+}
+
+/* --- The wizard waving the player on down the street ---------------------- */
+/* Chevrons run from the wizard toward the vanishing point -- the visual half of
+   the "follow me" gesture; the sprite's lean is the other half. They only show
+   between a correct answer and "Next Question": that is the moment the wizard
+   is actually waving the player on to the next block. */
+.quiz-graphics-panel .guide-chevrons {
+  position: absolute;
+  left: 36%;
+  /* Sits just under the visible horizon, which moves as the scene is cropped;
+     question.js publishes where that landed. */
+  top: calc(var(--horizon-top, 37%) + 2%);
+  width: 13%;
+  height: auto;
+  pointer-events: none;
+  transform: rotate(-12deg);
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.7));
+  opacity: 0;
+  transition: opacity 240ms ease-out;
+}
+.quiz-graphics-panel.guiding .guide-chevrons { opacity: 1; }
+.quiz-graphics-panel .guide-chevron { opacity: 0; }
+.quiz-graphics-panel.guiding .guide-chevron {
+  animation: guide-chevron 2.1s ease-in-out infinite;
+}
+.quiz-graphics-panel.guiding .guide-chevron:nth-of-type(2) { animation-delay: 0.16s; }
+.quiz-graphics-panel.guiding .guide-chevron:nth-of-type(3) { animation-delay: 0.32s; }
+
+@keyframes guide-chevron {
+  0%, 62%, 100% { opacity: 0.22; }
+  24% { opacity: 1; }
+}
+
 /* --- "Advance a block" beat, played on a correct answer ------------------- */
 .quiz-graphics-panel.advancing .city-background {
   animation: street-advance 780ms cubic-bezier(0.18, 0.72, 0.28, 1) both;
+}
+.quiz-graphics-panel.advancing .boss-looming {
+  animation: street-advance 780ms cubic-bezier(0.18, 0.72, 0.28, 1) both;
+}
+/* The step goes on the inner group so the outer `--boss-scale` transition is
+   left free to run the growth at the same time. */
+.quiz-graphics-panel.advancing .boss-sway {
+  animation: boss-step 780ms ease-out;
 }
 .quiz-graphics-panel.advancing .wizard-sprite {
   animation: wizard-passby 780ms cubic-bezier(0.18, 0.72, 0.28, 1) both;
@@ -81,9 +175,21 @@
 @media (prefers-reduced-motion: reduce) {
   .quiz-graphics-panel.advancing .city-background,
   .quiz-graphics-panel.advancing .wizard-sprite,
-  .quiz-graphics-panel.advancing::after {
+  .quiz-graphics-panel.advancing .boss-looming,
+  .quiz-graphics-panel.advancing .boss-sway,
+  .quiz-graphics-panel.advancing::after,
+  .quiz-graphics-panel .wizard-sprite,
+  .quiz-graphics-panel .boss-sway,
+  .quiz-graphics-panel .boss-eyes,
+  .quiz-graphics-panel .boss-core,
+  .quiz-graphics-panel .boss-beacon,
+  .quiz-graphics-panel.guiding .guide-chevron {
     animation: none;
   }
+  /* The boss still grows -- it just snaps to its new size instead of striding. */
+  .quiz-graphics-panel .boss-figure { transition: none; }
+  .quiz-graphics-panel .guide-chevrons { transition: none; }
+  .quiz-graphics-panel.guiding .guide-chevron { opacity: 0.85; }
 }
 .quiz-graphics-panel .wizard-sprite {
   position: absolute;
@@ -92,7 +198,20 @@
   height: 60%;
   width: auto;
   transform: translateX(-50%);
+  transform-origin: 50% 100%;
   filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.6));
+  animation: wizard-guide 4.2s ease-in-out infinite;
+}
+/* Idle bob, then a lean down-street toward the boss: the wizard is pointing the
+   way, not just standing there. Pivots on the feet, and has to carry its own
+   centring translate or the sprite jumps half its width. */
+@keyframes wizard-guide {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+  24% { transform: translateX(-50%) translateY(-1.5%) rotate(0deg); }
+  48% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+  62% { transform: translateX(-48%) translateY(-1%) rotate(4deg); }
+  72% { transform: translateX(-46%) translateY(-2.5%) rotate(7deg); }
+  84% { transform: translateX(-48%) translateY(-0.5%) rotate(3deg); }
 }
 .quiz-caption {
   position: absolute;
@@ -139,15 +258,38 @@
 }
 .quiz-command-panel .options-list {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.4rem;
   height: 100%;
+  min-height: 0;
 }
 .quiz-command-panel .option-btn {
-  padding: 0.35rem 0.6rem;
+  padding: 0.3rem 0.55rem;
+  gap: 0.5rem;
   font-size: var(--option-font-size, 0.85rem);
   line-height: 1.25;
+  min-height: 0;
+}
+/* The circle is the tallest fixed element in a cell -- keep it small enough that
+   it never sets the floor on how short an answer row can get. */
+.quiz-command-panel .option-letter {
+  width: 1.45rem;
+  height: 1.45rem;
+  font-size: 0.72rem;
+}
+.quiz-command-panel .option-text {
+  flex: 1;
+  min-width: 0;
+}
+/* Last-resort fallback: at the smallest font the text still does not fit, so let
+   it scroll inside its own cell instead of spilling out of the clipped panel. */
+.quiz-command-panel .options-list.options-overflowing .option-btn {
+  align-items: stretch;
+}
+.quiz-command-panel .options-list.options-overflowing .option-text {
+  overflow-y: auto;
+  min-height: 0;
 }
 .quiz-command-panel .explanation-row {
   display: flex;
