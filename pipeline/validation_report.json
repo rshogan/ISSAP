@@ -1,0 +1,50 @@
+{
+  "totalRecords": 500,
+  "crosstab": {
+    "D1": {
+      "Easy": 48,
+      "Moderate": 35,
+      "Challenging": 21
+    },
+    "D2": {
+      "Easy": 25,
+      "Moderate": 56,
+      "Challenging": 31
+    },
+    "D3": {
+      "Easy": 22,
+      "Moderate": 101,
+      "Challenging": 37
+    },
+    "D4": {
+      "Easy": 25,
+      "Moderate": 68,
+      "Challenging": 31
+    }
+  },
+  "crosstabExpected": {
+    "D1": {
+      "Easy": 48,
+      "Moderate": 35,
+      "Challenging": 21
+    },
+    "D2": {
+      "Easy": 25,
+      "Moderate": 56,
+      "Challenging": 31
+    },
+    "D3": {
+      "Easy": 22,
+      "Moderate": 101,
+      "Challenging": 37
+    },
+    "D4": {
+      "Easy": 25,
+      "Moderate": 68,
+      "Challenging": 31
+    }
+  },
+  "crosstabOk": true,
+  "flaggedCount": 0,
+  "flags": {}
+}

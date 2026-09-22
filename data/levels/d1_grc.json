@@ -1,0 +1,212 @@
+{
+  "domain": "D1",
+  "cities": [
+    {
+      "id": "d1_c1",
+      "index": 1,
+      "name": "Compliancetown",
+      "motif": "scroll",
+      "questionIds": [
+        "e1q004",
+        "e1q007",
+        "e1q011",
+        "e1q012",
+        "e1q014",
+        "e1q022",
+        "e1q037",
+        "e1q038",
+        "e1q043",
+        "e1q046",
+        "e1q048"
+      ],
+      "questionCount": 11,
+      "points": 78
+    },
+    {
+      "id": "d1_c2",
+      "index": 2,
+      "name": "Auditburg",
+      "motif": "magnifier",
+      "questionIds": [
+        "e1q059",
+        "e1q062",
+        "e1q071",
+        "e1q076",
+        "e1q085",
+        "e1q110",
+        "e1q112",
+        "e1q120",
+        "e1q124",
+        "e2q004",
+        "e2q005"
+      ],
+      "questionCount": 11,
+      "points": 78
+    },
+    {
+      "id": "d1_c3",
+      "index": 3,
+      "name": "Riskford",
+      "motif": "scale",
+      "questionIds": [
+        "e2q015",
+        "e2q016",
+        "e2q021",
+        "e2q043",
+        "e2q046",
+        "e2q061",
+        "e2q063",
+        "e2q068",
+        "e2q075",
+        "e2q076",
+        "e2q080"
+      ],
+      "questionCount": 11,
+      "points": 74
+    },
+    {
+      "id": "d1_c4",
+      "index": 4,
+      "name": "Policyville",
+      "motif": "book",
+      "questionIds": [
+        "e2q088",
+        "e2q097",
+        "e2q098",
+        "e2q100",
+        "e2q106",
+        "e2q116",
+        "e2q122",
+        "e3q003",
+        "e3q028",
+        "e3q029"
+      ],
+      "questionCount": 10,
+      "points": 72
+    },
+    {
+      "id": "d1_c5",
+      "index": 5,
+      "name": "Frameworkhaven",
+      "motif": "tower",
+      "questionIds": [
+        "e3q044",
+        "e3q045",
+        "e3q047",
+        "e3q052",
+        "e3q056",
+        "e3q060",
+        "e3q068",
+        "e3q072",
+        "e3q073",
+        "e3q077"
+      ],
+      "questionCount": 10,
+      "points": 62
+    },
+    {
+      "id": "d1_c6",
+      "index": 6,
+      "name": "Redline Ridge",
+      "motif": "scroll",
+      "questionIds": [
+        "e3q079",
+        "e3q085",
+        "e3q088",
+        "e3q091",
+        "e3q106",
+        "e3q107",
+        "e3q109",
+        "e3q112",
+        "e3q120",
+        "e4q011"
+      ],
+      "questionCount": 10,
+      "points": 68
+    },
+    {
+      "id": "d1_c7",
+      "index": 7,
+      "name": "Controlsberg",
+      "motif": "shield",
+      "questionIds": [
+        "e4q014",
+        "e4q022",
+        "e4q029",
+        "e4q031",
+        "e4q040",
+        "e4q042",
+        "e4q043",
+        "e4q045",
+        "e4q052",
+        "e4q056"
+      ],
+      "questionCount": 10,
+      "points": 68
+    },
+    {
+      "id": "d1_c8",
+      "index": 8,
+      "name": "Mandateport",
+      "motif": "scroll",
+      "questionIds": [
+        "e4q069",
+        "e4q075",
+        "e4q078",
+        "e4q092",
+        "e4q093",
+        "e4q095",
+        "e4q096",
+        "e4q118",
+        "e4q119",
+        "e4q124"
+      ],
+      "questionCount": 10,
+      "points": 68
+    }
+  ],
+  "boss": {
+    "id": "d1_boss",
+    "phases": [
+      {
+        "id": "d1_boss_p1",
+        "index": 1,
+        "name": "The Auditor's Keep",
+        "questionIds": [
+          "e1q001",
+          "e1q028",
+          "e1q050",
+          "e1q063",
+          "e1q070",
+          "e1q082",
+          "e2q008",
+          "e2q010",
+          "e2q029",
+          "e2q049",
+          "e2q056"
+        ],
+        "questionCount": 11,
+        "points": 110
+      },
+      {
+        "id": "d1_boss_p2",
+        "index": 2,
+        "name": "Fortress of Zero Findings",
+        "questionIds": [
+          "e2q118",
+          "e3q024",
+          "e3q081",
+          "e3q090",
+          "e3q119",
+          "e4q017",
+          "e4q032",
+          "e4q066",
+          "e4q084",
+          "e4q116"
+        ],
+        "questionCount": 10,
+        "points": 100
+      }
+    ]
+  }
+}

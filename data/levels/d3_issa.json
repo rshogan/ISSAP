@@ -1,0 +1,316 @@
+{
+  "domain": "D3",
+  "cities": [
+    {
+      "id": "d3_c1",
+      "index": 1,
+      "name": "Firewallton",
+      "motif": "flame",
+      "questionIds": [
+        "e1q010",
+        "e1q016",
+        "e1q017",
+        "e1q025",
+        "e1q029",
+        "e1q030",
+        "e1q033",
+        "e1q034",
+        "e1q047",
+        "e1q049",
+        "e1q055",
+        "e1q057"
+      ],
+      "questionCount": 12,
+      "points": 92
+    },
+    {
+      "id": "d3_c2",
+      "index": 2,
+      "name": "Segmentville",
+      "motif": "wall",
+      "questionIds": [
+        "e1q058",
+        "e1q064",
+        "e1q068",
+        "e1q069",
+        "e1q073",
+        "e1q077",
+        "e1q087",
+        "e1q089",
+        "e1q095",
+        "e1q096",
+        "e1q101",
+        "e1q105"
+      ],
+      "questionCount": 12,
+      "points": 92
+    },
+    {
+      "id": "d3_c3",
+      "index": 3,
+      "name": "Patchburg",
+      "motif": "gear",
+      "questionIds": [
+        "e1q106",
+        "e1q108",
+        "e1q116",
+        "e1q118",
+        "e1q122",
+        "e1q123",
+        "e2q001",
+        "e2q002",
+        "e2q011",
+        "e2q017",
+        "e2q019"
+      ],
+      "questionCount": 11,
+      "points": 82
+    },
+    {
+      "id": "d3_c4",
+      "index": 4,
+      "name": "Hardenhurst",
+      "motif": "shield",
+      "questionIds": [
+        "e2q023",
+        "e2q027",
+        "e2q030",
+        "e2q035",
+        "e2q036",
+        "e2q041",
+        "e2q042",
+        "e2q047",
+        "e2q051",
+        "e2q052",
+        "e2q059"
+      ],
+      "questionCount": 11,
+      "points": 84
+    },
+    {
+      "id": "d3_c5",
+      "index": 5,
+      "name": "Redundancy Ridge",
+      "motif": "tower",
+      "questionIds": [
+        "e2q065",
+        "e2q071",
+        "e2q073",
+        "e2q081",
+        "e2q082",
+        "e2q083",
+        "e2q084",
+        "e2q087",
+        "e2q089",
+        "e2q103",
+        "e2q104"
+      ],
+      "questionCount": 11,
+      "points": 84
+    },
+    {
+      "id": "d3_c6",
+      "index": 6,
+      "name": "Uptimeburg",
+      "motif": "clock",
+      "questionIds": [
+        "e2q109",
+        "e2q113",
+        "e2q114",
+        "e2q115",
+        "e2q125",
+        "e3q004",
+        "e3q009",
+        "e3q011",
+        "e3q012",
+        "e3q017",
+        "e3q022"
+      ],
+      "questionCount": 11,
+      "points": 86
+    },
+    {
+      "id": "d3_c7",
+      "index": 7,
+      "name": "Failoverfield",
+      "motif": "cloud",
+      "questionIds": [
+        "e3q023",
+        "e3q026",
+        "e3q033",
+        "e3q039",
+        "e3q040",
+        "e3q042",
+        "e3q048",
+        "e3q050",
+        "e3q053",
+        "e3q055",
+        "e3q062"
+      ],
+      "questionCount": 11,
+      "points": 84
+    },
+    {
+      "id": "d3_c8",
+      "index": 8,
+      "name": "Backuptown",
+      "motif": "lock",
+      "questionIds": [
+        "e3q064",
+        "e3q066",
+        "e3q069",
+        "e3q071",
+        "e3q082",
+        "e3q094",
+        "e3q095",
+        "e3q097",
+        "e3q101",
+        "e3q103",
+        "e3q104"
+      ],
+      "questionCount": 11,
+      "points": 82
+    },
+    {
+      "id": "d3_c9",
+      "index": 9,
+      "name": "Resilience Bay",
+      "motif": "shield",
+      "questionIds": [
+        "e3q105",
+        "e3q123",
+        "e4q006",
+        "e4q007",
+        "e4q008",
+        "e4q013",
+        "e4q019",
+        "e4q023",
+        "e4q033",
+        "e4q044",
+        "e4q046"
+      ],
+      "questionCount": 11,
+      "points": 84
+    },
+    {
+      "id": "d3_c10",
+      "index": 10,
+      "name": "Clusterville",
+      "motif": "gear",
+      "questionIds": [
+        "e4q049",
+        "e4q051",
+        "e4q054",
+        "e4q055",
+        "e4q058",
+        "e4q061",
+        "e4q063",
+        "e4q064",
+        "e4q072",
+        "e4q073",
+        "e4q077"
+      ],
+      "questionCount": 11,
+      "points": 84
+    },
+    {
+      "id": "d3_c11",
+      "index": 11,
+      "name": "Endpointburg",
+      "motif": "tower",
+      "questionIds": [
+        "e4q081",
+        "e4q085",
+        "e4q087",
+        "e4q090",
+        "e4q103",
+        "e4q104",
+        "e4q106",
+        "e4q112",
+        "e4q120",
+        "e4q121",
+        "e4q122"
+      ],
+      "questionCount": 11,
+      "points": 86
+    }
+  ],
+  "boss": {
+    "id": "d3_boss",
+    "phases": [
+      {
+        "id": "d3_boss_p1",
+        "index": 1,
+        "name": "The Breach Stronghold",
+        "questionIds": [
+          "e1q013",
+          "e1q021",
+          "e1q031",
+          "e1q032",
+          "e1q045",
+          "e1q053",
+          "e1q056",
+          "e1q080",
+          "e1q097",
+          "e1q104"
+        ],
+        "questionCount": 10,
+        "points": 100
+      },
+      {
+        "id": "d3_boss_p2",
+        "index": 2,
+        "name": "Fortress Single-Point-of-Failure",
+        "questionIds": [
+          "e2q003",
+          "e2q013",
+          "e2q028",
+          "e2q057",
+          "e2q066",
+          "e2q072",
+          "e2q096",
+          "e2q108",
+          "e3q005"
+        ],
+        "questionCount": 9,
+        "points": 90
+      },
+      {
+        "id": "d3_boss_p3",
+        "index": 3,
+        "name": "Keep of Configuration Drift",
+        "questionIds": [
+          "e3q014",
+          "e3q025",
+          "e3q032",
+          "e3q036",
+          "e3q041",
+          "e3q065",
+          "e3q100",
+          "e3q116",
+          "e3q124"
+        ],
+        "questionCount": 9,
+        "points": 90
+      },
+      {
+        "id": "d3_boss_p4",
+        "index": 4,
+        "name": "Bastion of Unpatched Systems",
+        "questionIds": [
+          "e4q005",
+          "e4q025",
+          "e4q057",
+          "e4q088",
+          "e4q100",
+          "e4q108",
+          "e4q109",
+          "e4q115",
+          "e4q123"
+        ],
+        "questionCount": 9,
+        "points": 90
+      }
+    ]
+  }
+}

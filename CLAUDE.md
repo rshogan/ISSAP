@@ -1,0 +1,63 @@
+## Role
+You are the web developer responsible for creating engaging and interactive gamified practice tests for boring, technical content.
+
+## Objective
+A practice test for the ISSAP security certification, built as ISSAP Cyber Conquest.
+
+## Requirements (shipped)
+1) HTML/CSS/vanilla JavaScript (ES modules), usable in modern browsers.
+2) Portable: no Node.js, no npm, no build step. Two vendored libraries (Leaflet, SVG.js) are the only dependencies, checked into `web/vendor/`. A one-time Python pipeline (stdlib only) turns the source PDFs into the JSON the app reads; the app itself never needs Python once that data exists.
+3) All questions and answers live in JSON (`data/questions/*.json`, `data/levels/*.json`), fetched by the web app — no content is hardcoded in JS.
+4) Title screen: New Game, Continue (lists named saves with % complete, XP, last-played), Exit (confirms, then closes the tab or shows a farewell screen if the browser blocks it).
+5) Progress is stored in `localStorage`, keyed by named save slot.
+6) Every screen has a way back: World Map → "Return to Title"; Region Map → "Leave Region"; Quiz → "Leave City" / "Retreat" (confirms before discarding the in-progress run); Results → "Back to Level Select".
+
+## Game Structure
+Title → World Map (4 countries) → Region Map (one country's cities + boss) → Quiz → Results → back to Region Map.
+
+- **Domain = country.** The 4 ISSAP CBK domains (Governance/Risk/Compliance, Security Architecture Modeling, Infrastructure & System Security Architecture, Identity & Access Management) are the 4 countries on the World Map.
+- **Question group = city.** Each domain's Easy/Moderate questions are bin-packed into ~10-12-question cities (8-11 cities per domain depending on pool size).
+- **Hardest questions = boss.** Each domain's Challenging questions form a multi-phase boss fight, locked until every city in that country is cleared.
+- **Scoring.** Points follow the source exam's own difficulty weights (Easy=6, Moderate=8, Challenging=10) and accumulate as XP on the save slot. A city/boss is "cleared" once every question in it has been answered once — clearing is progress-gated, not score-gated, since this is a practice/learning tool, not a pass/fail gate. The correct answer and an explanation are always shown immediately after answering.
+- **Conquering.** A country is "conquered" once its boss is cleared; the game is "won" once all 4 are conquered. Save slots track this and show a badge.
+
+## Content Pipeline
+`pipeline/build_questions.py` parses the 4 practice-exam PDFs and the answer-key PDF (via `pdftotext`), cross-validating every question against three independent sources (quick-reference table, detailed-explanation header, the `✓`-marked correct option) before writing `data/questions/<domain>.json`. `pipeline/build_levels.py` bins those into city/boss levels and assigns each city a fictitious name and a "motif" (see Graphics), both hand-authored to allude to that city's actual question content (e.g. Compliancetown/scroll, Firewallton/flame, Credentialburg/key). Re-run both after any change to the source PDFs or the naming/motif tables.
+
+## Graphics
+- **World Map**: cyberpunk style cards on a CRT monitor with 1980s retro styling, one country card per domain with a progress bar and a digital "Conquered" badge.
+- **Region Map** (per domain, via Leaflet with `CRS.Simple` — no real-world tiles): retrowave-cyberpunk styled to match the world map — the same CRT shell with scanlines and HUD corners, and a neon grid (major/minor lines in the domain's accent) filling the void instead of an ocean. The landmass is a dark slab with a glowing neon coastline; a procedurally generated coastline (seeded jittered-ellipse + Catmull-Rom smoothing, so every domain has a distinct silhouette), neon-wireframe mountains, a glowing river, and exactly one extra biome feature per domain (swamp, forest, or lake — not every map has every biome). Neon roads wire the cities together as a minimum spanning tree, with each boss stronghold spurring off its nearest city; roads take a hot contrasting color against the domain's grid so the network never reads as part of the mesh. Every feature has a comical label in-world (e.g. "Mountains of Governance Requirements", "The Swamp of Stolen Identity", "The Ocean of PII"). Cities are placed with a bias toward biome features (rivers/coast/lake), kept a minimum distance apart and from mountains/boss sites so they never overlap, and are drawn as small skyline tiles — 3-4 buildings whose window lighting comes from the region's biome (swamp = murky green-gold, forest = green, lake = cold cyan) with the domain's accent on the rooflines, so a cleared city visibly lights up while an unexplored one stays mostly dark. Each tile carries the city's index and a small motif-colored badge in the corners; hovering shows the city's name, question count, and best score. Boss markers sit near the mountains and look like colossal robots, with state-driven eye glow (grey + padlock when locked, red when active, green when defeated); hovering shows "Locked" or "Defeated". All icon/symbol art (mountains, trees, reeds, waves, motif badges, boss robots) is built with SVG.js rather than hand-written markup.
+- **Quiz screen** ("Gold Box" RPG layout, reactive to window resizing, not a mobile layout): a 3-panel grid — left graphics panel (60% width: generated city street scene + wizard character + a caption naming them), right question panel (40% width: difficulty badge + question stem), bottom command panel (35% height: a 2x2 answer grid that shrinks its own font size until all 4 options fit with no scrollbar, then swaps in-place to the explanation + Next button after answering).
+  - The city background is a "looking down the street" first-person perspective scene, generated as SVG (no image assets) and seeded per city so no two streets are laid out alike: a banded retrowave sunset sky with stars, a sliced neon sun on the horizon, a neon perspective grid for the ground, and a street populated all the way to the horizon. Each block carries a front row of neon-edged 3D buildings with randomized lit/dark window grids, plus a back row standing behind them so the skyline has real depth rather than a single flat wall. Tapered towers — lit floor bands, vertical neon ribs, a spire and a red beacon — are sprinkled through both rows past the near field, breaking up the roofline and forming a dense skyline silhouette against the sunset. A block occasionally opens out into a paved plaza with a lit monument instead of another storefront. Cars park at the curb, robots loiter along the curb line at every depth, and festoon string lights sag across the street every other block. Everything is placed on a true perspective depth ladder (apparent scale = 1/depth, so objects bunch toward the vanishing point rather than stepping down linearly), with outline weights, window density and an atmospheric haze fade all following distance. The city's motif hangs overhead as a glowing neon sign. Answering correctly plays an "advance a block" beat — the scene dollies toward the vanishing point and settles, the wizard sweeps past the camera, and a flash blooms out of the horizon (CSS-only, and suppressed under `prefers-reduced-motion`). Each domain has its own neon accent (D1 cyan, D2 magenta, D3 amber, D4 green) driving the grid, building edges, windows and signage.
+
+
+## Characters
+The 8 classic secure design principles are each a wizard, themed on the 8 D&D schools of magic (the "abjurist"/"illusionist" pairing in the original brief made this mapping obvious):
+
+| Principle | Wizard | School |
+|---|---|---|
+| Fail-Safe Defaults | Zephyrine the Abjurist | Abjuration |
+| Psychological Acceptability | Mirelle the Illusionist | Illusion |
+| Complete Mediation | Osric the Diviner | Divination |
+| Open Design | Faye the Evoker | Evocation |
+| Least Privilege | Pell the Conjurer | Conjuration |
+| Separation of Privilege | Lysbet the Enchanter | Enchantment |
+| Economy of Mechanism | Cobb the Transmuter | Transmutation |
+| Least Common Mechanism | Wick the Necromancer | Necromancy |
+
+Each has a genuinely distinct body/pose/silhouette (broad shield-bearer, slender one-arm-raised caster, hooded/faceless orb-holder, minimal armless cone, etc.) — none share a skeleton, only recolored. A wizard is assigned per **city**, cycling through all 8 in order across a domain's cities, and stays consistent for every question in that city.  They should be rendered as SVG graphics - not pixelated - and overlaid on the city scene backgrounds
+
+## Technical Architecture
+```
+web/            static app: index.html, css/, js/ (ES modules), vendor/ (leaflet, svg.js)
+data/           questions/ and levels/ JSON, generated by the pipeline
+pipeline/       build_questions.py, build_levels.py (Python 3 stdlib + pdftotext)
+server/         run_server.py — zero-dependency static file server (no-cache, for local iteration)
+run.bat         double-click entry point: launches the server and opens the browser
+context/        source practice exam + answer key PDFs
+
+```
+No framework, no bundler, no npm. `save.js` owns the `localStorage` schema; `gamification.js` derives progress/unlock/conquered state from a save + the level data; `data.js` fetches/caches JSON; `regionLayouts.js` holds the pre-generated region geometry (coastlines, feature/city/boss coordinates, labels). `mapIcons.js` and `pixelArt.js` are the two SVG.js art generators — region-map symbology and quiz-screen scene/character art respectively. Both emit live inline `<svg>`; nothing is rasterized. (`pixelArt.js` keeps its name from an earlier pixel-art pass; its output is now clean vector.)
+
+## Context
+`context/` : practice exam and answer key (source of truth for all question content).

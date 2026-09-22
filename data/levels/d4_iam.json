@@ -1,0 +1,241 @@
+{
+  "domain": "D4",
+  "cities": [
+    {
+      "id": "d4_c1",
+      "index": 1,
+      "name": "Credentialburg",
+      "motif": "key",
+      "questionIds": [
+        "e1q005",
+        "e1q006",
+        "e1q009",
+        "e1q018",
+        "e1q023",
+        "e1q040",
+        "e1q041",
+        "e1q042",
+        "e1q052",
+        "e1q054",
+        "e1q065",
+        "e1q067"
+      ],
+      "questionCount": 12,
+      "points": 88
+    },
+    {
+      "id": "d4_c2",
+      "index": 2,
+      "name": "Federationville",
+      "motif": "tower",
+      "questionIds": [
+        "e1q072",
+        "e1q075",
+        "e1q078",
+        "e1q083",
+        "e1q086",
+        "e1q088",
+        "e1q090",
+        "e1q092",
+        "e1q098",
+        "e1q099",
+        "e1q107",
+        "e1q113"
+      ],
+      "questionCount": 12,
+      "points": 88
+    },
+    {
+      "id": "d4_c3",
+      "index": 3,
+      "name": "SSOford",
+      "motif": "eye",
+      "questionIds": [
+        "e1q121",
+        "e1q125",
+        "e2q006",
+        "e2q009",
+        "e2q024",
+        "e2q025",
+        "e2q026",
+        "e2q031",
+        "e2q032",
+        "e2q034",
+        "e2q037",
+        "e2q039"
+      ],
+      "questionCount": 12,
+      "points": 90
+    },
+    {
+      "id": "d4_c4",
+      "index": 4,
+      "name": "Provisiontown",
+      "motif": "gear",
+      "questionIds": [
+        "e2q050",
+        "e2q062",
+        "e2q064",
+        "e2q069",
+        "e2q079",
+        "e2q090",
+        "e2q102",
+        "e2q107",
+        "e2q110",
+        "e2q117",
+        "e2q121",
+        "e2q124"
+      ],
+      "questionCount": 12,
+      "points": 88
+    },
+    {
+      "id": "d4_c5",
+      "index": 5,
+      "name": "Deprovisionburg",
+      "motif": "lock",
+      "questionIds": [
+        "e3q008",
+        "e3q010",
+        "e3q016",
+        "e3q019",
+        "e3q021",
+        "e3q027",
+        "e3q031",
+        "e3q034",
+        "e3q035",
+        "e3q037",
+        "e3q043",
+        "e3q070"
+      ],
+      "questionCount": 12,
+      "points": 90
+    },
+    {
+      "id": "d4_c6",
+      "index": 6,
+      "name": "Entitlementshire",
+      "motif": "crown",
+      "questionIds": [
+        "e3q075",
+        "e3q076",
+        "e3q078",
+        "e3q080",
+        "e3q087",
+        "e3q093",
+        "e3q099",
+        "e3q114",
+        "e3q121",
+        "e3q122",
+        "e4q009"
+      ],
+      "questionCount": 11,
+      "points": 84
+    },
+    {
+      "id": "d4_c7",
+      "index": 7,
+      "name": "Directoryville",
+      "motif": "book",
+      "questionIds": [
+        "e4q012",
+        "e4q020",
+        "e4q021",
+        "e4q024",
+        "e4q026",
+        "e4q027",
+        "e4q035",
+        "e4q039",
+        "e4q048",
+        "e4q050",
+        "e4q062"
+      ],
+      "questionCount": 11,
+      "points": 82
+    },
+    {
+      "id": "d4_c8",
+      "index": 8,
+      "name": "Tokenhaven",
+      "motif": "key",
+      "questionIds": [
+        "e4q065",
+        "e4q067",
+        "e4q068",
+        "e4q079",
+        "e4q086",
+        "e4q097",
+        "e4q101",
+        "e4q111",
+        "e4q113",
+        "e4q117",
+        "e4q125"
+      ],
+      "questionCount": 11,
+      "points": 84
+    }
+  ],
+  "boss": {
+    "id": "d4_boss",
+    "phases": [
+      {
+        "id": "d4_boss_p1",
+        "index": 1,
+        "name": "The Privilege Escalation Spire",
+        "questionIds": [
+          "e1q020",
+          "e1q044",
+          "e1q091",
+          "e1q100",
+          "e1q111",
+          "e2q014",
+          "e2q018",
+          "e2q022",
+          "e2q040",
+          "e2q058",
+          "e2q077"
+        ],
+        "questionCount": 11,
+        "points": 110
+      },
+      {
+        "id": "d4_boss_p2",
+        "index": 2,
+        "name": "Fortress of Orphaned Accounts",
+        "questionIds": [
+          "e2q085",
+          "e2q091",
+          "e2q111",
+          "e3q006",
+          "e3q013",
+          "e3q030",
+          "e3q049",
+          "e3q089",
+          "e3q098",
+          "e3q108"
+        ],
+        "questionCount": 10,
+        "points": 100
+      },
+      {
+        "id": "d4_boss_p3",
+        "index": 3,
+        "name": "Keep of Shared Credentials",
+        "questionIds": [
+          "e3q110",
+          "e3q117",
+          "e4q010",
+          "e4q016",
+          "e4q041",
+          "e4q047",
+          "e4q059",
+          "e4q083",
+          "e4q102",
+          "e4q114"
+        ],
+        "questionCount": 10,
+        "points": 100
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "domain": "D1",
+    "name": "Governance, Risk, and Compliance",
+    "file": "d1_grc.json",
+    "questionCount": 104,
+    "maxPoints": 778
+  },
+  {
+    "domain": "D2",
+    "name": "Security Architecture Modeling",
+    "file": "d2_sam.json",
+    "questionCount": 112,
+    "maxPoints": 908
+  },
+  {
+    "domain": "D3",
+    "name": "Infrastructure and System Security Architecture",
+    "file": "d3_issa.json",
+    "questionCount": 160,
+    "maxPoints": 1310
+  },
+  {
+    "domain": "D4",
+    "name": "Identity and Access Management Architecture",
+    "file": "d4_iam.json",
+    "questionCount": 124,
+    "maxPoints": 1004
+  }
+]

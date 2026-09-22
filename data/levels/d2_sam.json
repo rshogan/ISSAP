@@ -1,0 +1,219 @@
+{
+  "domain": "D2",
+  "cities": [
+    {
+      "id": "d2_c1",
+      "index": 1,
+      "name": "Blueprintbury",
+      "motif": "book",
+      "questionIds": [
+        "e1q015",
+        "e1q024",
+        "e1q026",
+        "e1q035",
+        "e1q039",
+        "e1q051",
+        "e1q060",
+        "e1q061",
+        "e1q074",
+        "e1q081",
+        "e1q084",
+        "e1q093"
+      ],
+      "questionCount": 12,
+      "points": 86
+    },
+    {
+      "id": "d2_c2",
+      "index": 2,
+      "name": "Patternfield",
+      "motif": "gear",
+      "questionIds": [
+        "e1q094",
+        "e1q102",
+        "e1q103",
+        "e1q109",
+        "e1q114",
+        "e1q115",
+        "e1q119",
+        "e2q012",
+        "e2q020",
+        "e2q033",
+        "e2q038",
+        "e2q044"
+      ],
+      "questionCount": 12,
+      "points": 92
+    },
+    {
+      "id": "d2_c3",
+      "index": 3,
+      "name": "Threat Model Heights",
+      "motif": "eye",
+      "questionIds": [
+        "e2q045",
+        "e2q054",
+        "e2q055",
+        "e2q060",
+        "e2q067",
+        "e2q070",
+        "e2q074",
+        "e2q086",
+        "e2q092",
+        "e2q093",
+        "e2q094",
+        "e2q095"
+      ],
+      "questionCount": 12,
+      "points": 88
+    },
+    {
+      "id": "d2_c4",
+      "index": 4,
+      "name": "Zonington",
+      "motif": "wall",
+      "questionIds": [
+        "e2q101",
+        "e2q112",
+        "e2q119",
+        "e2q123",
+        "e3q001",
+        "e3q002",
+        "e3q015",
+        "e3q020",
+        "e3q038",
+        "e3q051",
+        "e3q054",
+        "e3q057"
+      ],
+      "questionCount": 12,
+      "points": 90
+    },
+    {
+      "id": "d2_c5",
+      "index": 5,
+      "name": "Layersburg",
+      "motif": "tower",
+      "questionIds": [
+        "e3q058",
+        "e3q059",
+        "e3q063",
+        "e3q067",
+        "e3q074",
+        "e3q083",
+        "e3q084",
+        "e3q092",
+        "e3q096",
+        "e3q111",
+        "e3q113"
+      ],
+      "questionCount": 11,
+      "points": 80
+    },
+    {
+      "id": "d2_c6",
+      "index": 6,
+      "name": "Diagramhaven",
+      "motif": "book",
+      "questionIds": [
+        "e3q115",
+        "e3q118",
+        "e4q001",
+        "e4q002",
+        "e4q015",
+        "e4q018",
+        "e4q030",
+        "e4q034",
+        "e4q037",
+        "e4q038",
+        "e4q053"
+      ],
+      "questionCount": 11,
+      "points": 82
+    },
+    {
+      "id": "d2_c7",
+      "index": 7,
+      "name": "Referencetown",
+      "motif": "scroll",
+      "questionIds": [
+        "e4q060",
+        "e4q070",
+        "e4q071",
+        "e4q076",
+        "e4q080",
+        "e4q082",
+        "e4q089",
+        "e4q091",
+        "e4q094",
+        "e4q098",
+        "e4q099"
+      ],
+      "questionCount": 11,
+      "points": 80
+    }
+  ],
+  "boss": {
+    "id": "d2_boss",
+    "phases": [
+      {
+        "id": "d2_boss_p1",
+        "index": 1,
+        "name": "The Architect's Bastion",
+        "questionIds": [
+          "e1q002",
+          "e1q003",
+          "e1q008",
+          "e1q019",
+          "e1q027",
+          "e1q036",
+          "e1q066",
+          "e1q079",
+          "e1q117",
+          "e2q007",
+          "e2q048"
+        ],
+        "questionCount": 11,
+        "points": 110
+      },
+      {
+        "id": "d2_boss_p2",
+        "index": 2,
+        "name": "Citadel of Assumptions",
+        "questionIds": [
+          "e2q053",
+          "e2q078",
+          "e2q099",
+          "e2q105",
+          "e2q120",
+          "e3q007",
+          "e3q018",
+          "e3q046",
+          "e3q061",
+          "e3q086"
+        ],
+        "questionCount": 10,
+        "points": 100
+      },
+      {
+        "id": "d2_boss_p3",
+        "index": 3,
+        "name": "Tower of Technical Debt",
+        "questionIds": [
+          "e3q102",
+          "e3q125",
+          "e4q003",
+          "e4q004",
+          "e4q028",
+          "e4q036",
+          "e4q074",
+          "e4q105",
+          "e4q107",
+          "e4q110"
+        ],
+        "questionCount": 10,
+        "points": 100
+      }
+    ]
+  }
+}
