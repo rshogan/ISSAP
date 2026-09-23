@@ -32,17 +32,21 @@
   grid-template-columns: 60% 40%;
   /* The shell fills the window rather than taking a fixed 72vh with a 680px cap,
      which used to leave a dead band underneath -- that height goes to answers
-     instead. The command row takes what the answers need, the scene takes the
-     remainder down to --scene-min. min-height: 0 matters: it pins the frame to
-     the height flex hands it, which keeps that height definite. Left to size
-     itself the fr scene track resolves against max-content -- a long question
-     stem wrapped into the narrow 40% column -- and the frame balloons to
-     thousands of pixels on a small window. When the answers genuinely need more
-     than one screen, question.js measures the shortfall and sets an inline
-     min-height here, so the frame grows by exactly that and the page scrolls. */
+     instead. The scene row is sized by question.js to its own width over the
+     artwork's 1.6 aspect, so the whole street is visible and -- crucially -- the
+     row does not move when the answer grid is swapped for the much shorter
+     explanation. Sizing it as the leftover instead made the scene jump taller
+     mid-question, which read as the view being zoomed in until you answered.
+     The command row then takes the remainder. min-height: 0 matters: it pins the
+     frame to the height flex hands it, which keeps that height definite -- left
+     to size itself an fr track resolves against max-content (a long question
+     stem wrapped into the narrow 40% column) and the frame balloons to thousands
+     of pixels on a small window. When the answers genuinely need more than one
+     screen, question.js measures the shortfall and sets an inline min-height
+     here, so the frame grows by exactly that and the page scrolls. */
   grid-template-rows:
-    minmax(var(--scene-min, 260px), 1fr)
-    minmax(var(--command-min, 24vh), auto);
+    var(--scene-height, 48vh)
+    minmax(var(--command-min, 24vh), 1fr);
   gap: 3px;
   width: 100%;
   flex: 1 1 auto;

@@ -57,6 +57,63 @@ async function startLevel(ctx, domainCode, kind, level) {
   });
 }
 
+// The colossus portrait is 64px -- nearly half again a fortress marker -- and
+// the spare boss point it would otherwise take can sit right on top of one. Find
+// it somewhere on the landmass with real elbow room, preferring to stay near
+// where the layout meant to put it rather than fleeing to the far coast.
+// Leaflet snaps to integer zooms, so a region renders at roughly 1px per map
+// unit -- a 64px portrait beside a 46px fortress needs their centres ~78px, and
+// therefore ~78 units, apart before the boxes stop touching. 110 leaves margin
+// for the domains that fit at a coarser zoom. The search caps its reward here,
+// so asking for more only makes it try harder, never wander further than it has to.
+const COLOSSUS_CLEARANCE = 110; // map units
+const COLOSSUS_DRIFT_PENALTY = 0.12;
+
+function pointInPolygon([x, y], polygon) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i, i += 1) {
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+function clearanceFrom(point, occupied) {
+  let min = Infinity;
+  for (const other of occupied) {
+    min = Math.min(min, Math.hypot(point[0] - other[0], point[1] - other[1]));
+  }
+  return min;
+}
+
+function placeColossus(layout, preferred, occupied) {
+  if (clearanceFrom(preferred, occupied) >= COLOSSUS_CLEARANCE) return preferred;
+  const b = layout.bounds;
+  const steps = 48;
+  let best = preferred;
+  let bestScore = -Infinity;
+  for (let i = 0; i <= steps; i += 1) {
+    for (let j = 0; j <= steps; j += 1) {
+      const candidate = [
+        b.minX + ((b.maxX - b.minX) * i) / steps,
+        b.minY + ((b.maxY - b.minY) * j) / steps,
+      ];
+      if (!pointInPolygon(candidate, layout.landmassPoints)) continue;
+      // Clearance past the target buys nothing, so cap it -- otherwise the
+      // colossus always ends up in the emptiest corner of the map.
+      const score =
+        Math.min(clearanceFrom(candidate, occupied), COLOSSUS_CLEARANCE) -
+        COLOSSUS_DRIFT_PENALTY * Math.hypot(candidate[0] - preferred[0], candidate[1] - preferred[1]);
+      if (score > bestScore) {
+        bestScore = score;
+        best = candidate;
+      }
+    }
+  }
+  return best;
+}
+
 // Unlike a city or fortress, the colossus has no entry in data/levels -- its
 // question set is assembled per attempt from what this save has got wrong, so
 // it is built here rather than looked up.
@@ -297,7 +354,18 @@ function buildMap(ctx, mapEl, code) {
   const colossus = colossusFor(ctx.state.lore, code);
   const colossusUnlocked = ctx.game.isColossusUnlocked(slot, code, levels);
   const colossusDefeated = ctx.game.isColossusDefeated(slot, code);
-  const colossusPt = layout.bossPoints[levels.boss.phases.length % layout.bossPoints.length];
+  const usedCityPoints = levels.cities.map((_, i) => layout.cityPoints[i % layout.cityPoints.length]);
+  const usedBossPoints = levels.boss.phases.map((_, i) => layout.bossPoints[i % layout.bossPoints.length]);
+  const colossusPt = placeColossus(
+    layout,
+    layout.bossPoints[levels.boss.phases.length % layout.bossPoints.length],
+    [
+      ...usedCityPoints,
+      ...usedBossPoints,
+      ...layout.mountains,
+      ...Object.values(layout.labels).map((l) => l.at),
+    ]
+  );
   const colossusState = !colossusUnlocked ? "locked" : colossusDefeated ? "defeated" : "active";
   const colossusMarker = L.marker(toLatLng(colossusPt), {
     icon: L.divIcon({

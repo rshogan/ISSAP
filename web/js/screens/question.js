@@ -165,6 +165,7 @@ export function renderQuestion(ctx) {
   container.querySelector(".question-stem").textContent = q.stem;
 
   const graphicsPanel = container.querySelector(".quiz-graphics-panel");
+  watchSceneSize(container.querySelector(".quiz-frame"), graphicsPanel);
   watchBossPresence(graphicsPanel, level);
   const commandPanel = container.querySelector("#command-panel");
   renderOptions(commandPanel, ctx, level, q, graphicsPanel);
@@ -208,13 +209,47 @@ function panelShortfall(commandPanel) {
   return Math.max(0, commandPanel.scrollHeight - commandPanel.clientHeight);
 }
 
-function fitOptionsToPanel(frame, commandPanel, optionsList) {
+// The scene row is sized from its own width, not from whatever the command panel
+// leaves over. Taking the leftover meant the row grew when the four answers were
+// replaced by the one-line explanation, and since the scene is drawn
+// `xMidYMax slice` -- bottom-anchored, cropping off the top -- a shorter row cut
+// away the sky and read as being zoomed in until you answered. Matching the
+// artwork's own aspect keeps the whole street visible and the row still.
+const SCENE_ASPECT = SCENE_VIEWBOX.width / SCENE_VIEWBOX.height;
+
+function sizeSceneRow(frame, graphicsPanel) {
+  const width = graphicsPanel.clientWidth;
+  if (!width) return;
+  frame.style.setProperty("--scene-height", `${Math.round(width / SCENE_ASPECT)}px`);
+}
+
+// Tied to the graphics panel, not to the answer grid: the grid is torn down and
+// rebuilt on every answer, so a listener owned by it unhooks itself the moment
+// the explanation appears and the scene keeps a stale height for the rest of
+// the question. The panel lives as long as the screen does.
+function watchSceneSize(frame, graphicsPanel) {
+  const resize = () => sizeSceneRow(frame, graphicsPanel);
+  requestAnimationFrame(resize);
+  const onResize = () => {
+    if (!graphicsPanel.isConnected) {
+      window.removeEventListener("resize", onResize);
+      return;
+    }
+    resize();
+  };
+  window.addEventListener("resize", onResize);
+}
+
+function fitOptionsToPanel(frame, graphicsPanel, commandPanel, optionsList) {
   // Sizes are all zero until the screen is actually in the document; bail out
   // rather than "fitting" against a detached tree and leaving the text oversized.
   if (!optionsList.isConnected || !optionsList.clientWidth) return;
   // Drop any growth a previous pass added, so this one measures against a frame
   // that simply fills the window -- a window that got bigger hands it back.
   frame.style.minHeight = "";
+  // Settle the scene before measuring the answers: it claims its height first,
+  // and the command row is what is left.
+  sizeSceneRow(frame, graphicsPanel);
 
   let fontSize = MAX_OPTION_FONT_PT;
   optionsList.style.setProperty("--option-font-size", `${fontSize}pt`);
@@ -239,8 +274,8 @@ function fitOptionsToPanel(frame, commandPanel, optionsList) {
 // "does this still fit on one screen" -- and watching the window rather than an
 // element keeps the fit from reacting to the layout it just produced, which a
 // ResizeObserver on any panel in the frame would do.
-function watchOptionFit(frame, commandPanel, optionsList) {
-  const refit = () => fitOptionsToPanel(frame, commandPanel, optionsList);
+function watchOptionFit(frame, graphicsPanel, commandPanel, optionsList) {
+  const refit = () => fitOptionsToPanel(frame, graphicsPanel, commandPanel, optionsList);
   requestAnimationFrame(refit);
   const onResize = () => {
     if (!optionsList.isConnected) {
@@ -289,7 +324,7 @@ function renderOptions(commandPanel, ctx, level, q, graphicsPanel) {
     optionsList.appendChild(optBtn);
   }
   commandPanel.appendChild(optionsList);
-  watchOptionFit(commandPanel.closest(".quiz-frame"), commandPanel, optionsList);
+  watchOptionFit(commandPanel.closest(".quiz-frame"), graphicsPanel, commandPanel, optionsList);
 }
 
 function renderExplanation(commandPanel, ctx, level, q, isCorrect) {
