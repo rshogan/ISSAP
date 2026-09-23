@@ -7,8 +7,8 @@ export function renderTitle(ctx) {
   const container = h(`
     <div class="screen title-screen">
       <button class="btn btn-secondary exit-btn">Exit</button>
-      <h1 class="game-title">ISSAP Cyber Conquest</h1>
-      <p class="tagline">Conquer all four domains of the ISSAP CBK.</p>
+      <h1 class="game-title">ISSAP Cyber Redemption</h1>
+      <p class="tagline">Liberate all four domains of the ISSAP CBK.</p>
       <div class="title-links">
         <button class="btn btn-secondary lore-btn">📖 Lore</button>
       </div>
@@ -67,7 +67,7 @@ export function renderTitle(ctx) {
   container.querySelector(".lore-btn").addEventListener("click", () => goto("lore"));
 
   container.querySelector(".exit-btn").addEventListener("click", () => {
-    if (!confirm("Exit ISSAP Cyber Conquest?")) return;
+    if (!confirm("Exit ISSAP Cyber Redemption?")) return;
     window.close();
     // Most browsers block window.close() on a tab the script didn't open itself;
     // if we're still here shortly after, show a graceful goodbye instead.
@@ -78,7 +78,7 @@ export function renderTitle(ctx) {
         h(`
           <div class="screen title-screen">
             <h1 class="game-title">Farewell, Explorer</h1>
-            <p class="tagline">Thanks for playing ISSAP Cyber Conquest. You may now close this browser tab.</p>
+            <p class="tagline">Thanks for playing ISSAP Cyber Redemption. You may now close this browser tab.</p>
           </div>
         `)
       );

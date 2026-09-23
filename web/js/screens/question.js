@@ -141,9 +141,9 @@ export function renderQuestion(ctx) {
   `);
 
   const exitBtn = container.querySelector(".exit-btn");
-  exitBtn.textContent = level.kind === "boss" ? "← Retreat" : "← Leave City";
+  exitBtn.textContent = level.kind === "boss" ? "← Withdraw" : "← Leave City";
   exitBtn.addEventListener("click", () => {
-    const label = level.kind === "boss" ? "retreat from this boss fight" : "leave this city";
+    const label = level.kind === "boss" ? "withdraw from this remediation" : "leave this city";
     if (confirm(`Are you sure you want to ${label}? Your progress on this run will not be saved.`)) {
       goto("levelselect", { currentDomain: state.currentDomain });
     }

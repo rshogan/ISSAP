@@ -1,0 +1,62 @@
+{
+  "name": "issap-cyber-redemption",
+  "productName": "ISSAP Cyber Redemption",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Desktop wrapper for the ISSAP Cyber Redemption practice test.",
+  "author": "ISSAP Cyber Redemption",
+  "license": "UNLICENSED",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "44.4.4",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "org.phl.issap.cyberredemption",
+    "productName": "ISSAP Cyber Redemption",
+    "directories": {
+      "output": "../dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../web",
+        "to": "web"
+      },
+      {
+        "from": "../data",
+        "to": "data"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ISSAP Cyber Redemption",
+      "uninstallDisplayName": "ISSAP Cyber Redemption",
+      "artifactName": "ISSAP-Cyber-Redemption-Setup-${version}.${ext}"
+    }
+  }
+}

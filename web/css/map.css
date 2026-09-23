@@ -175,13 +175,32 @@
   box-shadow: 0 0 20px var(--card-neon, var(--neon-cyan)), inset 0 0 22px rgba(255, 255, 255, 0.05);
 }
 
+/* Portrait of the colossus holding this nation. The art draws its own neon ring
+   in `currentColor`, so it tracks the card's domain accent automatically. */
 .worldmap-screen .country-flag {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1.5px solid var(--card-neon, var(--neon-cyan));
-  background: radial-gradient(circle at 35% 30%, var(--card-neon, var(--neon-cyan)), transparent 72%);
-  box-shadow: 0 0 14px var(--card-neon, var(--neon-cyan));
+  width: 56px;
+  height: 56px;
+  color: var(--card-neon, var(--neon-cyan));
+  filter: drop-shadow(0 0 9px var(--card-neon, var(--neon-cyan)));
+}
+.worldmap-screen .country-flag svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.worldmap-screen .colossus-eye {
+  fill: #ff4d4d;
+  filter: drop-shadow(0 0 3px #ff4d4d);
+}
+/* Remediated: the thing is powered down. Eyes go green rather than red, the
+   same signal the boss markers on the region map use for a defeated colossus,
+   while the portrait keeps its nation's accent. */
+.worldmap-screen .country-card.liberated .country-flag {
+  opacity: 0.7;
+}
+.worldmap-screen .country-card.liberated .colossus-eye {
+  fill: var(--neon-green);
+  filter: drop-shadow(0 0 4px var(--neon-green));
 }
 
 .domain-d1 { --card-neon: var(--neon-cyan); }

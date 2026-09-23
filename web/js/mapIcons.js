@@ -1,4 +1,5 @@
-// Map feature symbology (mountains, trees, reeds, waves, boss robots) built
+// Map feature symbology (mountains, trees, reeds, waves, boss robots, and the
+// World Map's colossus portraits) built
 // programmatically with SVG.js rather than hand-written markup, per project
 // guidance. Each function draws into a detached SVG.js canvas and returns the
 // serialized markup, suitable for a Leaflet divIcon or direct innerHTML use.
@@ -139,3 +140,117 @@ export function robotIconHTML(state) {
   });
 }
 
+
+/* ---------------------------------------------------------------------------
+ * Colossus portraits for the World Map country cards.
+ *
+ * One per domain, and each is a genuinely different head rather than the same
+ * skull in four colors -- the card should read as "which threat actor holds
+ * this nation" at a glance. Neon lines are drawn in `currentColor`, so the
+ * portrait inherits the card's own domain accent from CSS (see map.css) and
+ * cannot drift out of sync with it.
+ * ------------------------------------------------------------------------ */
+const COLOSSUS_PLATE = "#2b3057";
+const COLOSSUS_PLATE_DARK = "#191d3a";
+const COLOSSUS_VOID = "#0b0a22";
+
+function colossusPortrait(build) {
+  return svgIcon(64, 64, (draw) => {
+    draw.addClass("colossus-icon");
+    draw.circle(62).center(32, 32).fill(COLOSSUS_VOID);
+    // Everything is clipped to the disc so shoulders can run off the bottom
+    // edge and the bust reads as cropped rather than floating.
+    const body = draw.group();
+    build(body);
+    body.clipWith(draw.circle(62).center(32, 32));
+    draw.circle(62).center(32, 32).fill("none").stroke({ color: "currentColor", width: 2, opacity: 0.9 });
+  });
+}
+
+const neon = (width = 1.4, opacity = 0.95) => ({ color: "currentColor", width, opacity });
+
+/** GOVERNAX, The Unwritten Policy -- a filing-cabinet colossus that redacted its own face. */
+function drawGovernax(g) {
+  // Shoulders.
+  g.polygon("8,64 14,50 50,50 56,64").fill(COLOSSUS_PLATE_DARK).stroke(neon(1.2, 0.7));
+  // Flat-topped cabinet head with short corner posts, so the silhouette reads
+  // as machinery rather than a bag with a handle.
+  g.line(20, 15, 20, 9).stroke(neon(1.3, 0.85));
+  g.line(44, 15, 44, 9).stroke(neon(1.3, 0.85));
+  g.circle(3).center(20, 8).fill("currentColor").opacity(0.85);
+  g.circle(3).center(44, 8).fill("currentColor").opacity(0.85);
+  g.polygon("17,15 47,15 50,48 14,48").fill(COLOSSUS_PLATE).stroke(neon(1.6));
+  // Drawer pull across the brow.
+  g.rect(20, 3.4).move(22, 18).fill(COLOSSUS_PLATE_DARK).stroke(neon(1, 0.6));
+  // A single redacted bar instead of a face, with two lights burning behind it.
+  g.rect(28, 9).move(18, 26).fill("#07060f").stroke(neon(1.1, 0.8));
+  g.circle(4.4).center(25, 30.5).addClass("colossus-eye");
+  g.circle(4.4).center(39, 30.5).addClass("colossus-eye");
+  // Ruled-paper lines across the jaw.
+  g.line(18, 40, 46, 40).stroke(neon(1, 0.5));
+  g.line(19, 44, 45, 44).stroke(neon(1, 0.5));
+  // The approval seal it never actually signed, stamped across the chest.
+  g.circle(11).center(32, 57).fill("none").stroke(neon(1.3, 0.8));
+  g.line(27, 57, 37, 57).stroke(neon(1.1, 0.65));
+}
+
+/** MODELBREAKER, The Broken Blueprint -- a head whose halves do not line up. */
+function drawModelbreaker(g) {
+  g.polygon("6,64 13,52 51,52 58,64").fill(COLOSSUS_PLATE_DARK).stroke(neon(1.2, 0.7));
+  // Left half sits where the diagram says; right half sits where it was built.
+  g.polygon("15,20 31,15 31,50 13,45").fill(COLOSSUS_PLATE).stroke(neon(1.6));
+  g.polygon("33,20 49,26 51,50 33,46").fill(COLOSSUS_PLATE).stroke(neon(1.6));
+  // Wireframe construction lines showing through the plating.
+  g.polyline("15,20 31,32 13,45").fill("none").stroke(neon(0.9, 0.5));
+  g.polyline("49,26 33,34 51,50").fill("none").stroke(neon(0.9, 0.5));
+  // Eyes at mismatched heights, one on each side of the seam.
+  g.circle(5).center(22, 30).addClass("colossus-eye");
+  g.circle(5).center(43, 35).addClass("colossus-eye");
+  // The seam itself.
+  g.line(32, 12, 32, 52).stroke({ color: "currentColor", width: 1.6, opacity: 0.9, dasharray: "3 2" });
+}
+
+/** GRIDFALL, The Shattered Perimeter -- a battlement with a hole walked through. */
+function drawGridfall(g) {
+  g.polygon("4,64 12,52 52,52 60,64").fill(COLOSSUS_PLATE_DARK).stroke(neon(1.2, 0.7));
+  // Crenellated skull: the third merlon is missing, which is how it got in.
+  g.polygon("12,24 12,18 19,18 19,24 26,24 26,18 33,18 33,24 45,24 45,18 52,18 52,24 52,50 12,50")
+    .fill(COLOSSUS_PLATE)
+    .stroke(neon(1.6));
+  // Antenna array along the wall.
+  g.line(16, 18, 16, 10).stroke(neon(1.1, 0.8));
+  g.line(32, 18, 32, 7).stroke(neon(1.1, 0.8));
+  g.line(48, 18, 48, 11).stroke(neon(1.1, 0.8));
+  g.circle(3).center(32, 6).fill("currentColor").opacity(0.9);
+  // Eye band with a jagged breach torn through the middle.
+  g.rect(32, 8).move(16, 29).fill("#07060f").stroke(neon(1.1, 0.75));
+  g.circle(4.6).center(23, 33).addClass("colossus-eye");
+  g.circle(4.6).center(41, 33).addClass("colossus-eye");
+  g.polyline("30,29 34,33 29,35 33,37").fill("none").stroke(neon(1.3, 0.9));
+  g.line(16, 44, 48, 44).stroke(neon(1, 0.5));
+}
+
+/** NULLCRED, The Stolen Name -- a faceless mask wearing somebody else's key. */
+function drawNullcred(g) {
+  g.polygon("9,64 15,51 49,51 55,64").fill(COLOSSUS_PLATE_DARK).stroke(neon(1.2, 0.7));
+  // A blank oval mask: no eyes at all, because it does not have a face of its own.
+  g.ellipse(34, 44).center(32, 30).fill(COLOSSUS_PLATE).stroke(neon(1.6));
+  g.ellipse(24, 34).center(32, 29).fill("#12142e").stroke(neon(0.9, 0.45));
+  // Keyhole where the face should be -- the credential it walked in with.
+  g.circle(9).center(32, 24).addClass("colossus-eye");
+  g.polygon("29,27 35,27 37,40 27,40").addClass("colossus-eye");
+  // Null ring: a slashed zero hanging over the mask.
+  g.circle(15).center(32, 30).fill("none").stroke(neon(1.2, 0.35));
+  g.line(23, 40, 41, 19).stroke(neon(1.2, 0.5));
+  // Hollow ID badge clipped to the shoulder.
+  g.rect(11, 8).move(39, 53).fill("#07060f").stroke(neon(1, 0.7));
+  g.line(41, 57, 48, 57).stroke(neon(0.9, 0.5));
+}
+
+const COLOSSUS_DRAWERS = { D1: drawGovernax, D2: drawModelbreaker, D3: drawGridfall, D4: drawNullcred };
+
+/** A 64x64 bust of the colossus holding `domainCode`, for the World Map cards. */
+export function colossusIconHTML(domainCode) {
+  const drawFn = COLOSSUS_DRAWERS[domainCode] || COLOSSUS_DRAWERS.D1;
+  return colossusPortrait(drawFn);
+}

@@ -17,7 +17,7 @@ export function renderResults(ctx) {
 
   const container = h(`
     <div class="screen results-screen">
-      <h1>${level.kind === "boss" ? "Boss Phase Defeated!" : "City Cleared!"}</h1>
+      <h1>${level.kind === "boss" ? "Boss Phase Remediated!" : "City Liberated!"}</h1>
       <p class="results-summary"></p>
       <p class="results-xp"></p>
       <div id="banners"></div>
@@ -32,12 +32,12 @@ export function renderResults(ctx) {
   const banners = container.querySelector("#banners");
   if (domainConquered) {
     const b = h(`<div class="banner conquered-banner"></div>`);
-    b.textContent = `🏰 ${manifestEntry.name} Conquered!`;
+    b.textContent = `🏰 ${manifestEntry.name} Liberated!`;
     banners.appendChild(b);
   }
   if (gameConquered) {
     const b = h(`<div class="banner game-conquered-banner"></div>`);
-    b.textContent = "👑 All Domains Conquered! You are ISSAP-ready.";
+    b.textContent = "👑 All Domains Liberated! You are ISSAP-ready.";
     banners.appendChild(b);
   }
 

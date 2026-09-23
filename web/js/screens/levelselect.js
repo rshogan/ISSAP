@@ -252,7 +252,7 @@ function buildMap(ctx, mapEl, code) {
       locked
         ? `${phase.name} — Locked · clear all cities to unlock`
         : cleared
-          ? `${phase.name} — Defeated · best ${best} pts`
+          ? `${phase.name} — Remediated · best ${best} pts`
           : `${phase.name} — ${phase.questionCount} questions`,
       { direction: "top", offset: [0, -20] }
     );
@@ -299,7 +299,7 @@ export function renderLevelSelect(ctx) {
         <h1></h1>
         <span style="width:1px"></span>
       </div>
-      <p class="region-legend">Click a city to test that ground; the stronghold guards the region's hardest questions. <span class="locked-note">Clear every city to unlock it.</span></p>
+      <p class="region-legend">Click a city to test that ground; the colossus's stronghold holds the region's hardest questions. <span class="locked-note">Clear every city to unlock it.</span></p>
       <div class="region-map-frame">
         <div class="frame-corner corner-tl"></div>
         <div class="frame-corner corner-tr"></div>
