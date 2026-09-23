@@ -1,4 +1,4 @@
-// Desktop wrapper for the ISSAP Cyber Conquest web app.
+// Desktop wrapper for the ISSAP Cyber Redemption web app.
 //
 // The web app under web/ is untouched by this: it is still a plain static site
 // that runs from run.bat in a browser. Electron just gives it its own window,
@@ -75,7 +75,7 @@ function createWindow() {
     minWidth: 900,
     // Below this the quiz frame (72vh, 440px floor) starts losing its sky.
     minHeight: 640,
-    title: "ISSAP Cyber Conquest",
+    title: "ISSAP Cyber Redemption",
     backgroundColor: "#0a0e1c",
     show: false,
     webPreferences: {

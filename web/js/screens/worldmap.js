@@ -1,4 +1,5 @@
 import { h } from "../dom.js";
+import { colossusIconHTML } from "../mapIcons.js";
 
 export function renderWorldMap(ctx) {
   const { state, goto, game } = ctx;
@@ -36,8 +37,8 @@ export function renderWorldMap(ctx) {
     const conquered = game.isDomainConquered(slot, code, levels);
     const card = h(`
       <button class="country-card domain-${code.toLowerCase()}">
-        <span class="conquered-badge">Conquered</span>
-        <div class="country-flag"></div>
+        <span class="conquered-badge">Liberated</span>
+        <div class="country-flag">${colossusIconHTML(code)}</div>
         <h2 class="country-name"></h2>
         <div class="progress-bar"><div class="progress-fill"></div></div>
         <span class="country-pct"></span>
@@ -45,14 +46,27 @@ export function renderWorldMap(ctx) {
     `);
     card.querySelector(".country-name").textContent = manifestEntry.name;
     card.querySelector(".progress-fill").style.width = `${pct}%`;
-    card.querySelector(".country-pct").textContent = `${pct}% breached`;
-    if (!conquered) card.querySelector(".conquered-badge").remove();
+    card.querySelector(".country-pct").textContent = `${pct}% remediated`;
+    if (conquered) card.classList.add("liberated");
+    else card.querySelector(".conquered-badge").remove();
     card.addEventListener("click", () => goto("levelselect", { currentDomain: code }));
     grid.appendChild(card);
   }
 
+  // Label each portrait with the colossus it depicts. Async because the lore is
+  // JSON like everything else; the cards are already usable without it.
+  ctx.data
+    .loadLore()
+    .then((lore) => {
+      for (const foe of lore.adversaries) {
+        const flag = grid.querySelector(`.domain-${foe.domain.toLowerCase()} .country-flag`);
+        if (flag) flag.title = `${foe.name} — ${foe.epithet}`;
+      }
+    })
+    .catch(() => {});
+
   if (game.isGameConquered(slot, state.levelsByDomain)) {
-    grid.after(h(`<div class="banner game-conquered-banner">All Sectors Conquered // System Secured</div>`));
+    grid.after(h(`<div class="banner game-conquered-banner">All Sectors Liberated // System Restored</div>`));
   }
 
   return container;

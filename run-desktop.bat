@@ -19,7 +19,7 @@ if exist "electron\node_modules\.bin\electron.cmd" (
     goto :eof
 )
 
-echo ISSAP Cyber Conquest - desktop app
+echo ISSAP Cyber Redemption - desktop app
 echo.
 echo No Electron runtime was found. Set one up with either:
 echo.

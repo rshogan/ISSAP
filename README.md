@@ -21,6 +21,6 @@ To just run it, no Node.js needed:
 
 To build a Windows installer, Node.js is required:  
 1. `winget install OpenJS.NodeJS.LTS`  
-2. run "build-installer.bat" - it npm installs and writes `dist\ISSAP-Cyber-Conquest-Setup-<version>.exe`  
+2. run "build-installer.bat" - it npm installs and writes `dist\ISSAP-Cyber-Redemption-Setup-<version>.exe`  
 
 The installer is per-user, so it does not need admin rights.  It is unsigned, so SmartScreen will warn on first run.  

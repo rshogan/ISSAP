@@ -44,7 +44,7 @@ $arch = switch ($env:PROCESSOR_ARCHITECTURE) {
 if (-not $Version) {
   Write-Host "Looking up the latest Electron release..."
   $release = Invoke-RestMethod -Uri "https://api.github.com/repos/electron/electron/releases/latest" `
-    -Headers @{ "User-Agent" = "issap-cyber-conquest" } -UseBasicParsing
+    -Headers @{ "User-Agent" = "issap-cyber-redemption" } -UseBasicParsing
   $Version = $release.tag_name.TrimStart("v")
 }
 
