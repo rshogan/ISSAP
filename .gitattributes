@@ -1,0 +1,7 @@
+# Shell scripts must keep LF endings: a CRLF shebang fails on Linux with
+# "bad interpreter: /bin/bash^M". This repo is developed on Windows with
+# core.autocrlf=true, so pin it here rather than rely on local config.
+*.sh text eol=lf
+
+# Windows entry points stay CRLF so they behave in cmd.exe.
+*.bat text eol=crlf
