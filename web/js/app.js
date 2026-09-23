@@ -17,6 +17,7 @@ const state = {
   currentSlot: null,
   currentDomain: null,
   currentLevel: null,
+  lore: null,
 };
 
 function goto(screen, params = {}) {
@@ -46,6 +47,9 @@ async function init() {
   try {
     state.manifest = await data.loadManifest();
     state.levelsByDomain = await data.loadAllLevels(game.DOMAINS);
+    // The region map needs the colossi by name to label their encounter, and
+    // the file is small and already cached by data.js for the Lore screen.
+    state.lore = await data.loadLore();
     goto("title");
   } catch (err) {
     root.innerHTML = "";

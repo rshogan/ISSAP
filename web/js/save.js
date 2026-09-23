@@ -1,8 +1,27 @@
 const STORAGE_KEY = "issap.saves.v1";
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 function emptyStore() {
   return { version: SCHEMA_VERSION, lastActiveSlot: null, slots: {} };
+}
+
+// v1 -> v2 added the per-domain miss log and colossus record. Migrate in place
+// rather than letting the version check fall through to emptyStore(), which
+// would silently delete every existing save.
+function migrate(store) {
+  if (store.version === SCHEMA_VERSION) return store;
+  if (store.version !== 1) return null;
+  for (const slot of Object.values(store.slots)) {
+    for (const domain of Object.values(slot.domains || {})) {
+      if (!domain.missed) domain.missed = {};
+      if (domain.colossus === undefined) domain.colossus = null;
+      // A v1 save could be flagged conquered on cities + fortresses alone; the
+      // colossus is now part of that, so let it be re-derived from the levels.
+      domain.conquered = false;
+    }
+  }
+  store.version = SCHEMA_VERSION;
+  return store;
 }
 
 function readStore() {
@@ -10,10 +29,10 @@ function readStore() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return emptyStore();
     const parsed = JSON.parse(raw);
-    if (!parsed || parsed.version !== SCHEMA_VERSION || typeof parsed.slots !== "object") {
-      return emptyStore();
-    }
-    return parsed;
+    if (!parsed || typeof parsed.slots !== "object") return emptyStore();
+    const migrated = migrate(parsed);
+    if (!migrated) return emptyStore();
+    return migrated;
   } catch {
     return emptyStore();
   }
@@ -29,7 +48,17 @@ function genId() {
 }
 
 function emptyDomainState() {
-  return { cities: {}, boss: { phases: {} }, conquered: false };
+  return {
+    cities: {},
+    boss: { phases: {} },
+    // The colossus is built fresh each attempt rather than stored as a level,
+    // so only its outcome lives here. `missed` is the raw material it draws on:
+    // questionId -> { misses, redeemed }, where redeemed means the player has
+    // since answered it correctly somewhere.
+    colossus: null,
+    missed: {},
+    conquered: false,
+  };
 }
 
 export function listSlots() {

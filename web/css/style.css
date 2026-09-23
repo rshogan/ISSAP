@@ -201,6 +201,7 @@ html, body {
 .results-screen { text-align: center; justify-content: center; }
 .results-summary { font-size: 1.3rem; font-weight: 700; margin: 0.4rem 0; }
 .results-xp { color: var(--accent); margin-bottom: 1rem; }
+.results-note { color: var(--text-dim); font-size: 0.95rem; margin: 0 0 1rem; max-width: 46ch; }
 .results-actions { margin-top: 1.5rem; }
 
 .error-screen { text-align: center; color: var(--incorrect); }

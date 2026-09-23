@@ -45,7 +45,9 @@ function cachedChevrons(domainCode) {
 // so the colossus at the vanishing point goes from a speck on the skyline to a
 // silhouette filling the sky above the horizon. A boss level starts part-way up
 // that ramp -- you are already standing in front of the thing.
-const BOSS_SCALE = { city: [1.5, 6.2], boss: [2.6, 7] };
+// The colossus fight starts with the thing already towering over you -- there
+// is no more ground to cover, this is the last block.
+const BOSS_SCALE = { city: [1.5, 6.2], boss: [2.6, 7], colossus: [4.2, 8.4] };
 function bossPresence(level) {
   const total = level.questions.length || 1;
   const progress = Math.min(1, (level.correctCount || 0) / total);
@@ -141,9 +143,14 @@ export function renderQuestion(ctx) {
   `);
 
   const exitBtn = container.querySelector(".exit-btn");
-  exitBtn.textContent = level.kind === "boss" ? "← Withdraw" : "← Leave City";
+  exitBtn.textContent = level.kind === "city" ? "← Leave City" : "← Withdraw";
   exitBtn.addEventListener("click", () => {
-    const label = level.kind === "boss" ? "withdraw from this remediation" : "leave this city";
+    const label =
+      level.kind === "colossus"
+        ? "withdraw from the colossus"
+        : level.kind === "boss"
+          ? "withdraw from this remediation"
+          : "leave this city";
     if (confirm(`Are you sure you want to ${label}? Your progress on this run will not be saved.`)) {
       goto("levelselect", { currentDomain: state.currentDomain });
     }
@@ -183,58 +190,66 @@ function playAdvance(graphicsPanel) {
   );
 }
 
-// The bottom command panel has a fixed height (35% of the quiz frame) with no
-// scrollbar, per CLAUDE.md -- so instead of truncating long answer text, shrink
-// a shared font-size (via CSS custom property) until the longest option actually
-// fits its grid cell.
-const MIN_OPTION_FONT_REM = 0.55;
-const MAX_OPTION_FONT_REM = 0.85;
-const OPTION_FONT_STEP_REM = 0.025;
+// Answer text is never allowed below 12pt. The frame flexes to fill the window,
+// so there is far more room than the old fixed 72vh box had; the fitter spends
+// it by stepping a shared font-size down from 14pt only as far as it must to
+// keep the whole quiz on one screen, and stops dead at 12pt. Past that the
+// command row grows and the page scrolls. Sizes are in pt, not rem, because the
+// floor is an absolute typographic one that has to hold whatever the reader's
+// root font size is.
+const MIN_OPTION_FONT_PT = 12;
+const MAX_OPTION_FONT_PT = 14;
+const OPTION_FONT_STEP_PT = 0.5;
 
-// A <button>'s own scrollHeight does not reliably report overflowing content
-// (its children live in an anonymous internal box), so measure the text span
-// against the button's content box instead.
-function optionOverflows(btn) {
-  const available = btn.clientHeight;
-  if (!available) return false;
-  const styles = getComputedStyle(btn);
-  const inner = available - parseFloat(styles.paddingTop) - parseFloat(styles.paddingBottom);
-  const text = btn.querySelector(".option-text");
-  const letter = btn.querySelector(".option-letter");
-  const needed = Math.max(text ? text.scrollHeight : 0, letter ? letter.offsetHeight : 0);
-  return needed > inner + 0.5;
+// How much taller the answer grid wants to be than the command row it was given.
+// The grid's rows have a min-content floor, so the overflow lands on the panel
+// as a whole rather than clipping inside any one button.
+function panelShortfall(commandPanel) {
+  return Math.max(0, commandPanel.scrollHeight - commandPanel.clientHeight);
 }
 
-function fitOptionsToPanel(optionsList, buttons) {
-  // Heights are all zero until the screen is actually in the document; bail out
+function fitOptionsToPanel(frame, commandPanel, optionsList) {
+  // Sizes are all zero until the screen is actually in the document; bail out
   // rather than "fitting" against a detached tree and leaving the text oversized.
-  if (!optionsList.isConnected || !optionsList.clientHeight) return;
-  let fontSize = MAX_OPTION_FONT_REM;
-  optionsList.style.setProperty("--option-font-size", `${fontSize}rem`);
-  while (fontSize > MIN_OPTION_FONT_REM && buttons.some(optionOverflows)) {
-    fontSize = Math.max(MIN_OPTION_FONT_REM, fontSize - OPTION_FONT_STEP_REM);
-    optionsList.style.setProperty("--option-font-size", `${fontSize}rem`);
+  if (!optionsList.isConnected || !optionsList.clientWidth) return;
+  // Drop any growth a previous pass added, so this one measures against a frame
+  // that simply fills the window -- a window that got bigger hands it back.
+  frame.style.minHeight = "";
+
+  let fontSize = MAX_OPTION_FONT_PT;
+  optionsList.style.setProperty("--option-font-size", `${fontSize}pt`);
+  while (fontSize > MIN_OPTION_FONT_PT && panelShortfall(commandPanel) > 0.5) {
+    fontSize = Math.max(MIN_OPTION_FONT_PT, fontSize - OPTION_FONT_STEP_PT);
+    optionsList.style.setProperty("--option-font-size", `${fontSize}pt`);
   }
-  // Even at the floor the text can still be a line too tall on a short window;
-  // let that last line scroll inside its own cell rather than be clipped by the
-  // panel, which is what made the bottom row look cut off.
-  optionsList.classList.toggle("options-overflowing", buttons.some(optionOverflows));
+
+  // Out of font size to give back and the answers still do not fit on one
+  // screen: grow the frame by what is missing and let the page scroll. Grid
+  // track sizing shares that extra height out between the scene and the command
+  // row, so a single pass can come up short -- re-measure and top it up.
+  for (let pass = 0; pass < 4; pass += 1) {
+    const shortfall = panelShortfall(commandPanel);
+    if (shortfall <= 0.5) break;
+    frame.style.minHeight = `${Math.ceil(frame.offsetHeight + shortfall)}px`;
+  }
 }
 
 // The screen is built detached and appended by app.js, so the first measurement
-// has to wait a frame. After that a ResizeObserver on the command panel re-fits
-// on every window resize (the quiz frame is sized in vh).
-function watchOptionFit(commandPanel, optionsList, buttons) {
-  requestAnimationFrame(() => fitOptionsToPanel(optionsList, buttons));
-  if (typeof ResizeObserver !== "function") return;
-  const observer = new ResizeObserver(() => {
+// has to wait a frame. After that only a window resize can change the answer to
+// "does this still fit on one screen" -- and watching the window rather than an
+// element keeps the fit from reacting to the layout it just produced, which a
+// ResizeObserver on any panel in the frame would do.
+function watchOptionFit(frame, commandPanel, optionsList) {
+  const refit = () => fitOptionsToPanel(frame, commandPanel, optionsList);
+  requestAnimationFrame(refit);
+  const onResize = () => {
     if (!optionsList.isConnected) {
-      observer.disconnect();
+      window.removeEventListener("resize", onResize);
       return;
     }
-    fitOptionsToPanel(optionsList, buttons);
-  });
-  observer.observe(commandPanel);
+    refit();
+  };
+  window.addEventListener("resize", onResize);
 }
 
 function renderOptions(commandPanel, ctx, level, q, graphicsPanel) {
@@ -274,7 +289,7 @@ function renderOptions(commandPanel, ctx, level, q, graphicsPanel) {
     optionsList.appendChild(optBtn);
   }
   commandPanel.appendChild(optionsList);
-  watchOptionFit(commandPanel, optionsList, Object.values(optionButtons));
+  watchOptionFit(commandPanel.closest(".quiz-frame"), commandPanel, optionsList);
 }
 
 function renderExplanation(commandPanel, ctx, level, q, isCorrect) {

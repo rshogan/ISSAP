@@ -1,7 +1,22 @@
 .question-screen {
   max-width: 1150px;
   width: 100%;
+  /* .screen's default 2rem/4rem block padding left a dead band under the frame.
+     The quiz wants that height for answers, so trim it to a thin margin -- the
+     frame below flexes into whatever is left. That flex needs something definite
+     to divide up: .screen is otherwise content-sized, which left the frame at
+     its own content height with the padding hanging off the bottom of the
+     window. `flex: 0 0 auto` is what makes the height below stick: .screen sets
+     `flex: 1`, whose `flex-basis: 0%` hands main-axis sizing to flex layout and
+     ignores `height` outright -- which left this box computing at its content
+     height, thousands of pixels tall on a small window. With a definite 100vh
+     the frame's own flex has something real to divide up, and when the answers
+     genuinely need more than one screen the frame overflows this box, which is
+     what the page scrollbar is for. */
+  flex: 0 0 auto;
+  height: 100vh;
   padding-top: 1rem;
+  padding-bottom: 1.25rem;
 }
 
 .quiz-topbar {
@@ -15,15 +30,23 @@
 .quiz-frame {
   display: grid;
   grid-template-columns: 60% 40%;
-  /* minmax(0, ...) so a long question/answer cannot push a row past its share --
-     grid tracks default to a min-content floor, which is what let the command
-     panel grow beyond the frame and clip its bottom row of answers. */
-  grid-template-rows: minmax(0, 13fr) minmax(0, 7fr);
+  /* The shell fills the window rather than taking a fixed 72vh with a 680px cap,
+     which used to leave a dead band underneath -- that height goes to answers
+     instead. The command row takes what the answers need, the scene takes the
+     remainder down to --scene-min. min-height: 0 matters: it pins the frame to
+     the height flex hands it, which keeps that height definite. Left to size
+     itself the fr scene track resolves against max-content -- a long question
+     stem wrapped into the narrow 40% column -- and the frame balloons to
+     thousands of pixels on a small window. When the answers genuinely need more
+     than one screen, question.js measures the shortfall and sets an inline
+     min-height here, so the frame grows by exactly that and the page scrolls. */
+  grid-template-rows:
+    minmax(var(--scene-min, 260px), 1fr)
+    minmax(var(--command-min, 24vh), auto);
   gap: 3px;
   width: 100%;
-  height: 72vh;
-  min-height: 440px;
-  max-height: 680px;
+  flex: 1 1 auto;
+  min-height: 0;
   background: #17130d;
   border: 5px solid #17130d;
   border-radius: 3px;
@@ -251,6 +274,9 @@
 .quiz-command-panel {
   grid-column: 1 / span 2;
   grid-row: 2;
+  /* No scrollbar of its own -- the answer grid's min-content rows push this
+     panel's row taller instead, and the page scrolls if that outgrows the
+     window. One scrollbar on the document beats four inside the grid. */
   overflow: hidden;
   background: var(--bg-panel-light);
   border-top: 2px solid #17130d;
@@ -259,37 +285,31 @@
 .quiz-command-panel .options-list {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  /* A min-content floor on the rows, not minmax(0, ...): the rows fill the panel
+     when the answers are short, and make the panel taller when 12pt text needs
+     more than its share, rather than clipping. */
+  grid-template-rows: repeat(2, minmax(min-content, 1fr));
   gap: 0.4rem;
-  height: 100%;
-  min-height: 0;
+  min-height: 100%;
 }
 .quiz-command-panel .option-btn {
   padding: 0.3rem 0.55rem;
   gap: 0.5rem;
-  font-size: var(--option-font-size, 0.85rem);
+  /* pt, not rem: the floor has to be an absolute 12pt regardless of the reader's
+     root font size, so the unit the fitter steps through is the unit of the
+     guarantee. question.js overrides this per-question. */
+  font-size: var(--option-font-size, 12pt);
   line-height: 1.25;
   min-height: 0;
 }
-/* The circle is the tallest fixed element in a cell -- keep it small enough that
-   it never sets the floor on how short an answer row can get. */
 .quiz-command-panel .option-letter {
-  width: 1.45rem;
-  height: 1.45rem;
-  font-size: 0.72rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 12pt;
 }
 .quiz-command-panel .option-text {
   flex: 1;
   min-width: 0;
-}
-/* Last-resort fallback: at the smallest font the text still does not fit, so let
-   it scroll inside its own cell instead of spilling out of the clipped panel. */
-.quiz-command-panel .options-list.options-overflowing .option-btn {
-  align-items: stretch;
-}
-.quiz-command-panel .options-list.options-overflowing .option-text {
-  overflow-y: auto;
-  min-height: 0;
 }
 .quiz-command-panel .explanation-row {
   display: flex;

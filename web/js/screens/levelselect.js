@@ -1,7 +1,16 @@
 import { h } from "../dom.js";
 import { REGION_LAYOUTS } from "../regionLayouts.js";
-import { mountainIconHTML, treeIconHTML, reedIconHTML, waveIconHTML, robotIconHTML, cityIconHTML } from "../mapIcons.js";
+import {
+  mountainIconHTML,
+  treeIconHTML,
+  reedIconHTML,
+  waveIconHTML,
+  robotIconHTML,
+  cityIconHTML,
+  colossusIconHTML,
+} from "../mapIcons.js";
 import { motifIconHTML, domainAccentColor } from "../pixelArt.js";
+import { buildColossusRun, colossusFor } from "../colossus.js";
 
 // Dark landmass slabs; the domain's neon does the identifying work on the
 // coastline, roads and grid rather than the fill color.
@@ -40,6 +49,31 @@ async function startLevel(ctx, domainCode, kind, level) {
       motif: kind === "city" ? level.motif : null,
       levelIndex: level.index,
       questions,
+      index: 0,
+      correctCount: 0,
+      pointsEarned: 0,
+      answers: [],
+    },
+  });
+}
+
+// Unlike a city or fortress, the colossus has no entry in data/levels -- its
+// question set is assembled per attempt from what this save has got wrong, so
+// it is built here rather than looked up.
+async function startColossus(ctx, domainCode, levels, colossus) {
+  const { goto, state } = ctx;
+  const questionsById = await ctx.data.loadQuestions(domainCode);
+  const run = buildColossusRun(state.currentSlot, domainCode, levels, questionsById);
+  goto("question", {
+    currentDomain: domainCode,
+    currentLevel: {
+      kind: "colossus",
+      id: `${domainCode.toLowerCase()}_colossus`,
+      name: colossus ? `${colossus.name} — ${colossus.epithet}` : "The Colossus",
+      motif: null,
+      levelIndex: null,
+      questions: run.questions,
+      missedCount: run.missedCount,
       index: 0,
       correctCount: 0,
       pointsEarned: 0,
@@ -258,6 +292,37 @@ function buildMap(ctx, mapEl, code) {
     );
     if (!locked) marker.on("click", () => startLevel(ctx, code, "boss", phase));
   });
+
+  // The colossus itself, on the one boss point the fortresses leave spare.
+  const colossus = colossusFor(ctx.state.lore, code);
+  const colossusUnlocked = ctx.game.isColossusUnlocked(slot, code, levels);
+  const colossusDefeated = ctx.game.isColossusDefeated(slot, code);
+  const colossusPt = layout.bossPoints[levels.boss.phases.length % layout.bossPoints.length];
+  const colossusState = !colossusUnlocked ? "locked" : colossusDefeated ? "defeated" : "active";
+  const colossusMarker = L.marker(toLatLng(colossusPt), {
+    icon: L.divIcon({
+      html: `<div class="colossus-marker ${colossusState}">
+        ${colossusIconHTML(code)}
+        ${colossusUnlocked ? "" : '<span class="colossus-marker-lock">\u{1F512}</span>'}
+      </div>`,
+      className: "map-icon-interactive",
+      iconSize: [64, 64],
+      iconAnchor: [32, 32],
+    }),
+    zIndexOffset: 500,
+  }).addTo(map);
+  const colossusName = colossus ? colossus.name : "The Colossus";
+  colossusMarker.bindTooltip(
+    !colossusUnlocked
+      ? `${colossusName} — Sealed · remediate every fortress to draw it out`
+      : colossusDefeated
+        ? `${colossusName}, ${colossus?.epithet ?? ""} — Defeated · best ${ctx.game.colossusBestScore(slot, code)} pts`
+        : `${colossusName}, ${colossus?.epithet ?? ""} — Final stand · built from the questions you have missed`,
+    { direction: "top", offset: [0, -30] }
+  );
+  if (colossusUnlocked) {
+    colossusMarker.on("click", () => startColossus(ctx, code, levels, colossus));
+  }
 
   map.fitBounds(
     L.latLngBounds(toLatLng([b.minX, b.maxY]), toLatLng([b.maxX, b.minY])),
