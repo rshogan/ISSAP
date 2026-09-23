@@ -20,3 +20,11 @@ To build a Windows installer, Node.js is required:  (can't upload an .exe instal
 2. run "build-installer.bat" - it npm installs and writes `dist\ISSAP-Cyber-Redemption-Setup-<version>.exe`  
 
 The installer is per-user, so it does not need admin rights.  It is unsigned, so SmartScreen will warn on first run.  
+
+## Saved Games
+On Windows, Your saved games are stored in your  %LocalAppData%  folder - for Chrome it is:  
+%LocalAppData%\Google\Chrome\User Data\Default\Local Storage\leveldb%  
+
+On Linux, I assume they would be somewhere in usr land.  Not sure!  
+
+Good Luck have Fun!
