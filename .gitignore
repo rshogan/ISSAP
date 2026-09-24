@@ -1,2 +1,6 @@
 # Installer output from build-installer.bat (electron-builder writes here).
 /dist/
+
+# Python bytecode from the pipeline scripts.
+__pycache__/
+*.pyc
