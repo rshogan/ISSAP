@@ -16,8 +16,31 @@ export function allCitiesCleared(save, domainCode, levels) {
   return levels.cities.every((c) => isCityCleared(save, domainCode, c.id));
 }
 
+export function citiesClearedCount(save, domainCode, levels) {
+  return levels.cities.filter((c) => isCityCleared(save, domainCode, c.id)).length;
+}
+
+/**
+ * How many of the domain's cities must be cleared before fortress `index`
+ * (0-based) opens. The fortresses are staggered evenly across the nation's
+ * cities -- fortress i of N wants i/N of them -- so a region opens up in stages
+ * instead of holding every stronghold back until the last city falls. The final
+ * fortress always lands on 100%.
+ */
+export function fortressCityRequirement(levels, index) {
+  const total = levels.cities.length;
+  const phases = levels.boss.phases.length;
+  if (total === 0 || phases === 0) return 0;
+  return Math.ceil((total * (index + 1)) / phases);
+}
+
+export function isFortressUnlocked(save, domainCode, levels, index) {
+  return citiesClearedCount(save, domainCode, levels) >= fortressCityRequirement(levels, index);
+}
+
+/** True once at least the first fortress is reachable. */
 export function isBossUnlocked(save, domainCode, levels) {
-  return levels.cities.length === 0 || allCitiesCleared(save, domainCode, levels);
+  return isFortressUnlocked(save, domainCode, levels, 0);
 }
 
 // The boss phases are the nation's fortresses. Remediating all of them is what
@@ -51,7 +74,7 @@ function levelCount(levels) {
 
 function clearedCount(save, domainCode, levels) {
   return (
-    levels.cities.filter((c) => isCityCleared(save, domainCode, c.id)).length +
+    citiesClearedCount(save, domainCode, levels) +
     levels.boss.phases.filter((p) => isBossPhaseCleared(save, domainCode, p.id)).length +
     (isColossusDefeated(save, domainCode) ? 1 : 0)
   );

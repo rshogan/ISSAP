@@ -3,14 +3,20 @@
 Serves the project root so the web app can fetch() its JSON data (blocked
 under file:// by CORS). Stdlib only, no installs required.
 """
-import socket
+import os
+import sys
+import urllib.request
 import webbrowser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 HOST = "127.0.0.1"
-PREFERRED_PORT = 8420
+# Fixed, never auto-incremented: localStorage is scoped to scheme+host+port,
+# so every port is a separate, empty set of save slots. Drifting to 8421 when
+# 8420 was busy is exactly how saves used to "disappear".
+PORT = 8420
+URL = f"http://{HOST}:{PORT}/web/"
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -27,27 +33,38 @@ class Handler(SimpleHTTPRequestHandler):
         pass
 
 
-def find_open_port(host, start_port, attempts=20):
-    port = start_port
-    for _ in range(attempts):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                s.bind((host, port))
-                return port
-            except OSError:
-                port += 1
-    raise RuntimeError(f"Could not find an open port after {attempts} attempts starting at {start_port}")
+class Server(ThreadingHTTPServer):
+    # On Windows SO_REUSEADDR lets a second process bind a port that is already
+    # being served, so the old server keeps answering and this one is silently
+    # ignored. POSIX only uses it to skip TIME_WAIT, which is harmless.
+    allow_reuse_address = os.name != "nt"
+
+
+def already_serving():
+    """True if the thing on PORT is a previous run of this server."""
+    try:
+        with urllib.request.urlopen(URL, timeout=2) as resp:
+            return b"<title>ISSAP Cyber Redemption</title>" in resp.read(4096)
+    except OSError:
+        return False
 
 
 def main():
-    port = find_open_port(HOST, PREFERRED_PORT)
-    url = f"http://{HOST}:{port}/web/"
-    server = ThreadingHTTPServer((HOST, port), Handler)
+    try:
+        server = Server((HOST, PORT), Handler)
+    except OSError:
+        if already_serving():
+            print(f"The ISSAP server is already running. Opening {URL}")
+            webbrowser.open(URL)
+            return
+        print(f"Port {PORT} is in use by another program.")
+        print("Close it and try again -- a different port would not see your saved games.")
+        sys.exit(1)
     print("ISSAP Practice Test server")
     print(f"Serving {ROOT}")
-    print(f"Open your browser to: {url}")
+    print(f"Open your browser to: {URL}")
     print("Press Ctrl+C to stop.")
-    webbrowser.open(url)
+    webbrowser.open(URL)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

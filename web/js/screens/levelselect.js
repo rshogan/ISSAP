@@ -324,12 +324,15 @@ function buildMap(ctx, mapEl, code) {
     marker.on("click", () => startLevel(ctx, code, "city", city));
   });
 
-  const bossUnlocked = ctx.game.isBossUnlocked(slot, code, levels);
+  // Fortresses open in stages as the nation's cities are cleared, so each one
+  // carries its own requirement rather than a single region-wide gate.
+  const citiesCleared = ctx.game.citiesClearedCount(slot, code, levels);
   levels.boss.phases.forEach((phase, i) => {
     const pt = layout.bossPoints[i % layout.bossPoints.length];
     const cleared = Boolean(slot.domains[code].boss.phases[phase.id]?.cleared);
     const best = slot.domains[code].boss.phases[phase.id]?.bestScore ?? 0;
-    const locked = !bossUnlocked;
+    const needed = ctx.game.fortressCityRequirement(levels, i);
+    const locked = citiesCleared < needed;
     const robotState = locked ? "locked" : cleared ? "cleared" : "active";
     const marker = L.marker(toLatLng(pt), {
       icon: L.divIcon({
@@ -341,7 +344,7 @@ function buildMap(ctx, mapEl, code) {
     }).addTo(map);
     marker.bindTooltip(
       locked
-        ? `${phase.name} — Locked · clear all cities to unlock`
+        ? `${phase.name} — Locked · ${citiesCleared}/${needed} cities remediated`
         : cleared
           ? `${phase.name} — Remediated · best ${best} pts`
           : `${phase.name} — ${phase.questionCount} questions`,
@@ -432,7 +435,7 @@ export function renderLevelSelect(ctx) {
         <h1></h1>
         <span style="width:1px"></span>
       </div>
-      <p class="region-legend">Click a city to test that ground; the colossus's stronghold holds the region's hardest questions. <span class="locked-note">Clear every city to unlock it.</span></p>
+      <p class="region-legend">Click a city to test that ground; the colossus's stronghold holds the region's hardest questions. <span class="locked-note">Fortresses open as you remediate more of the nation; the colossus stirs only once every city and fortress has fallen.</span></p>
       <div class="region-map-frame">
         <div class="frame-corner corner-tl"></div>
         <div class="frame-corner corner-tr"></div>
